@@ -1,0 +1,167 @@
+---
+title: "Deploy Observatory to Any Static Host"
+sidebarTitle: "Deployment"
+description: "Build Observatory with Vite and deploy the dist/ folder to Vercel, Netlify, GitHub Pages, or Cloudflare Pages with correct SPA routing."
+---
+
+Observatory is a Vite-bundled static single-page application. Running `npm run build` produces a `dist/` folder containing plain HTML, CSS, and JavaScript files — no server required. The entire output can be served from any CDN or static hosting provider that can deliver files over HTTP.
+
+## Build commands
+
+<CodeGroup>
+```bash Build for production
+npm run build
+```
+
+```bash Preview the production build locally
+npm run preview
+```
+</CodeGroup>
+
+After `npm run build` succeeds, the `dist/` directory contains:
+
+- `index.html` — the SPA entry point
+- `assets/main.js` — the bundled application code
+- `assets/main.css` — all compiled Tailwind CSS
+- Preloaded component chunks for each Aurora component
+
+`npm run preview` spins up a local server pointing at `dist/` so you can verify the production build before deploying.
+
+## Hosting platforms
+
+<Tabs>
+  <Tab title="Vercel">
+    Vercel is the easiest option — it detects Vite automatically and handles SPA routing without any extra configuration.
+
+    **Option A — Vercel CLI:**
+    ```bash
+    npx vercel --prod
+    ```
+
+    **Option B — GitHub integration:**
+    Connect your repository in the Vercel dashboard and use these settings:
+
+    | Setting | Value |
+    |---|---|
+    | Framework preset | Vite |
+    | Build command | `npm run build` |
+    | Output directory | `dist` |
+    | Install command | `npm install` |
+
+    Vercel automatically rewrites all routes to `index.html`, so React Router's client-side routing works for direct links to `/projects`, `/about`, and all other routes without any extra configuration.
+  </Tab>
+
+  <Tab title="Netlify">
+    **Deploy via Netlify CLI:**
+    ```bash
+    npx netlify deploy --prod --dir=dist
+    ```
+
+    **Deploy via Netlify dashboard:**
+
+    | Setting | Value |
+    |---|---|
+    | Build command | `npm run build` |
+    | Publish directory | `dist` |
+
+    **Required: SPA routing fallback**
+
+    Netlify does not rewrite routes automatically. Add a `netlify.toml` file at the project root to redirect all paths to `index.html`:
+
+    ```toml netlify.toml
+    [[redirects]]
+      from = "/*"
+      to = "/index.html"
+      status = 200
+    ```
+
+    Alternatively, create `dist/_redirects` with a single line:
+
+    ```
+    /*    /index.html    200
+    ```
+
+    Without this file, navigating directly to `/projects` or refreshing on any sub-route will return a 404.
+  </Tab>
+
+  <Tab title="GitHub Pages">
+    GitHub Pages serves files from a branch root, so you need to configure Vite's `base` path to match your repository name.
+
+    **Step 1 — Set the base path in `vite.config.js`:**
+    ```js vite.config.js
+    export default {
+      base: '/observatory/', // replace with your actual repo name
+    }
+    ```
+
+    **Step 2 — Build:**
+    ```bash
+    npm run build
+    ```
+
+    **Step 3 — Deploy the `dist/` folder to the `gh-pages` branch:**
+    ```bash
+    npx gh-pages -d dist
+    ```
+
+    **Step 4 — Add a SPA routing fallback:**
+
+    GitHub Pages serves a `404.html` when a path is not found. Create `public/404.html` with a script that redirects to `index.html` while preserving the original path in a query parameter, then add a corresponding script in `index.html` to restore the URL. A minimal approach:
+
+    ```html public/404.html
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <script>
+          // Redirect to index.html, encoding the path as a query parameter
+          const path = window.location.pathname.replace('/observatory', '');
+          window.location.replace(
+            '/observatory/?p=' + encodeURIComponent(path)
+          );
+        </script>
+      </head>
+    </html>
+    ```
+
+    Then in `index.html`, before the React bundle loads, decode the `?p=` parameter and use `history.replaceState` to restore the correct path.
+
+    <Note>
+      The `gh-pages` package must be installed as a dev dependency: `npm install --save-dev gh-pages`.
+    </Note>
+  </Tab>
+
+  <Tab title="Cloudflare Pages">
+    Connect your repository via the Cloudflare Pages dashboard and use these build settings:
+
+    | Setting | Value |
+    |---|---|
+    | Build command | `npm run build` |
+    | Build output directory | `dist` |
+    | Node.js version | 18 or later |
+
+    Cloudflare Pages automatically serves `index.html` for any path that does not match a static file, so React Router's client-side routing works for all Observatory routes without any extra configuration.
+
+    **Deploy via Wrangler CLI:**
+    ```bash
+    npx wrangler pages deploy dist
+    ```
+  </Tab>
+</Tabs>
+
+## SPA routing
+
+<Note>
+  Observatory uses React Router for client-side routing. When a user navigates directly to `/projects`, `/about`, `/work`, or any other sub-route — or refreshes the page while on one — the static host receives a request for a path that has no corresponding file on disk. Without a 404 → `index.html` fallback, the host returns a real 404 error instead of loading the React app.
+
+  Configure the appropriate fallback for your host (see the platform tabs above) before going live.
+</Note>
+
+## Custom domain
+
+Set your custom domain in your hosting provider's dashboard using their standard domain settings. Once DNS propagates, Observatory will be served at your domain with no code changes needed.
+
+If you include absolute URLs anywhere in your contact data — for example, a personal site link in `RadioDial.js` — update those values in the source file and rebuild after pointing your custom domain.
+
+## Environment variables
+
+Observatory has no environment variables. All content — project data, skills, work history, contact channels, and personal information — is bundled directly into the JavaScript output at build time. There is no runtime configuration, no `.env` file, and no secrets to manage.

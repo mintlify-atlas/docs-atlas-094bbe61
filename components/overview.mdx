@@ -1,0 +1,95 @@
+---
+title: "Aurora Components: The Observatory UI System"
+sidebarTitle: "Overview"
+description: "A complete reference for all 13 Aurora UI components powering Observatory's space-themed portfolio. Organized by role: backgrounds, layout, visualization, and content."
+---
+
+Observatory's UI is built on a single, cohesive design system called **Aurora**. Every visual element — from the star-dusted hero background to the polaroid testimonials — is an Aurora component. All components are written in React 18, animated with Framer Motion, styled with Tailwind CSS, and navigated with React Router v6.
+
+The system divides into four groups by responsibility:
+
+---
+
+## Background Effects
+
+Purely decorative, full-bleed layers that set the atmospheric tone. They render behind all page content and require no configuration.
+
+<CardGroup cols={3}>
+  <Card title="Starfield" icon="sparkles" href="/components/starfield">
+    An animated canvas that renders hundreds of twinkling white stars. Rare shooting stars streak across at random intervals.
+  </Card>
+  <Card title="Aurora Ribbon" icon="wave-sine" href="/components/aurora-ribbon">
+    Four SVG wave paths animated in real time to simulate the Aurora Borealis. Uses the aurora Tailwind palette with a `mix-blend-screen` overlay.
+  </Card>
+  <Card title="Cursor Trail" icon="arrow-pointer">
+    A Framer Motion trail of glowing turquoise dots that follow the cursor. Particles fade out after 500 ms, keeping the trail short and subtle.
+  </Card>
+</CardGroup>
+
+---
+
+## Layout
+
+Structural components that wrap all pages and provide navigation, transitions, and the global shell.
+
+<CardGroup cols={3}>
+  <Card title="Layout" icon="layout-panel-left">
+    The root layout shell. Composes `CursorTrail`, `Navigation`, a global film-grain noise overlay, the main content area, and a footer timestamp.
+  </Card>
+  <Card title="Navigation" icon="compass">
+    A fixed top navigation bar with a Framer Motion sliding indicator, a scrolled-glass blur effect, and a full-screen mobile overlay menu.
+  </Card>
+  <Card title="Page Transition" icon="arrow-right-arrow-left">
+    Wraps routed pages in a Framer Motion wipe animation — a teal gradient curtain slides up as each new route enters.
+  </Card>
+</CardGroup>
+
+---
+
+## Data Visualization
+
+Interactive components that each own a dedicated route and transform structured data arrays into immersive visual experiences.
+
+<CardGroup cols={2}>
+  <Card title="Constellation Layout" icon="star" href="/components/constellation-layout">
+    Renders a portfolio of projects as an interactive star map. Each project node is positioned by `x`/`y` coordinates and sized by `magnitude`. Hover reveals a tooltip with tech tags and links. Used on `/projects`.
+  </Card>
+  <Card title="Spectrum Analyzer" icon="bar-chart-2" href="/components/spectrum-analyzer">
+    Displays skills as animated vertical bars styled as a radio-frequency spectrum analyzer. Bars animate from zero height on mount and breathe with a looping opacity pulse. Used on `/skills`.
+  </Card>
+  <Card title="Orbital Path" icon="circle-dot" href="/components/orbital-path">
+    Maps work history as clickable nodes on an SVG elliptical orbit. Selecting a node slides in a detail panel with role, company, and description. Used on `/work`.
+  </Card>
+  <Card title="Radio Dial" icon="radio" href="/components/radio-dial">
+    A circular dial metaphor for contact channels. A spring-animated pointer rotates to the selected channel; switching triggers a noise static overlay. Used on `/contact`.
+  </Card>
+</CardGroup>
+
+---
+
+## Content Display
+
+Components that present long-form and social proof content with thematic styling.
+
+<CardGroup cols={2}>
+  <Card title="Case Study Reader" icon="book-open" href="/components/case-study-reader">
+    A two-panel layout with a film-strip sidebar index and a darkroom viewer. Selecting an entry triggers a development animation — the content blurs, desaturates, then slowly resolves into focus. Used on `/case-studies`.
+  </Card>
+  <Card title="Star Map Index" icon="map" href="/components/star-map-index">
+    Plots articles as stars on an astronomical coordinate grid with α (ascension) and δ (declination) axis labels. Star size encodes article magnitude (depth). Hover reveals a floating metadata card. Used on `/articles`.
+  </Card>
+  <Card title="Polaroid Testimonials" icon="image" href="/components/polaroid-testimonials">
+    Renders testimonials as tilted polaroid photo cards. Each card has a hue-rotated gradient photo placeholder. On hover, Framer Motion flattens the tilt and scales the card up. Used on `/testimonials`.
+  </Card>
+</CardGroup>
+
+---
+
+## Common Patterns
+
+All Aurora components share a set of conventions:
+
+- **No external props** — data is co-located in each component file as a plain JavaScript array. To customize, edit the array directly.
+- **Framer Motion via proxy** — animations import `m` from `assets/proxy.js`, which re-exports `framer-motion`. Use `m.div`, `m.button`, `m.line`, etc.
+- **Tailwind aurora palette** — custom color tokens (`aurora-turquoise`, `aurora-teal`, `aurora-seafoam`, `aurora-violet`, `aurora-magenta`, `space-800`, `space-900`) defined in `tailwind.config.js`.
+- **`AnimatePresence`** — tooltip and panel transitions use `AnimatePresence` with `mode="wait"` to ensure exit animations complete before the next element mounts.

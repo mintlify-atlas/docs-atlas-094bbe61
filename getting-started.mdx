@@ -1,0 +1,186 @@
+---
+title: "Get Started with Observatory in Minutes"
+sidebarTitle: "Getting Started"
+description: "Clone Observatory, install dependencies with npm, run the dev server, and customize your content. Up and running in under 5 minutes."
+---
+
+Observatory is a static React SPA — there is no server to configure, no environment variables to set, and no cloud services to provision. Getting from a fresh clone to a running dev server takes under five minutes.
+
+## Prerequisites
+
+- **Node.js 18 or later** — Observatory uses Vite 4+, which requires Node 18+. Check your version with `node --version`.
+- **npm** (bundled with Node.js) **or pnpm** — either package manager works.
+- A terminal and a code editor.
+
+## Setup
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone Observatory from GitHub to your local machine:
+
+    ```bash
+    git clone https://github.com/apursley2012/observatory
+    cd observatory
+    ```
+
+    This gives you the full source including `components/aurora/`, `assets/`, `pages/`, and `index.html`.
+  </Step>
+
+  <Step title="Install dependencies">
+    Install all project dependencies. Observatory uses React, React Router, Framer Motion, Tailwind, and Lucide React — all declared in `package.json`.
+
+    <CodeGroup>
+      ```bash npm
+      npm install
+      ```
+
+      ```bash pnpm
+      pnpm install
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Start the development server">
+    Launch the Vite dev server:
+
+    <CodeGroup>
+      ```bash npm
+      npm run dev
+      ```
+
+      ```bash pnpm
+      pnpm dev
+      ```
+    </CodeGroup>
+
+    Vite will print the local URL once it starts:
+
+    ```
+    VITE v4.x.x  ready in Xms
+
+    ➜  Local:   http://localhost:5173/
+    ➜  Network: use --host to expose
+    ```
+
+    <Tip>
+      Vite's hot-module replacement (HMR) works automatically. Any change you save to a component in `components/aurora/` or a page function in `assets/main.js` will instantly update in the browser without a full reload.
+    </Tip>
+  </Step>
+
+  <Step title="Open the app in your browser">
+    Navigate to [http://localhost:5173](http://localhost:5173). You should see the Observatory home page — the animated Starfield, AuroraRibbon gradient, and the headline *"Building systems at high altitude."*
+
+    All nine routes are immediately navigable via the top navigation bar.
+  </Step>
+
+  <Step title="Personalize your content">
+    Observatory stores all portfolio content — project entries, skills data, work history, testimonials, articles, and contact info — directly inside the Aurora component source files. Open the relevant file in `components/aurora/` and edit the hardcoded data arrays to replace the placeholder content with your own.
+
+    <Warning>
+      All data is hardcoded in the component source files. There is no CMS, API, or external data source. To update your portfolio content, you must edit the JavaScript source directly and rebuild or let HMR pick up the change.
+    </Warning>
+
+    Common files to edit first:
+
+    | File | What to change |
+    |---|---|
+    | `components/aurora/ConstellationLayout.js` | Your project entries (name, tech, description, links) |
+    | `components/aurora/SpectrumAnalyzer.js` | Your skill domains and proficiency levels |
+    | `components/aurora/OrbitalPath.js` | Your work history (company, role, dates, responsibilities) |
+    | `components/aurora/PolaroidTestimonials.js` | Colleague testimonial quotes and attribution |
+    | `components/aurora/StarMapIndex.js` | Article titles, topics, and links |
+    | `components/aurora/RadioDial.js` | Your contact email or preferred communication method |
+  </Step>
+</Steps>
+
+## Project Structure
+
+Here is the directory layout of Observatory as it exists in the repository:
+
+```
+observatory/
+├── assets/           # Bundled JS/CSS output (Vite build artifacts)
+│   ├── main.js       # Bundled application entry — all page components and router
+│   ├── main.css      # Compiled Tailwind CSS + Google Fonts import
+│   ├── proxy.js      # Framer Motion re-export (motion alias)
+│   ├── jsx-runtime.js
+│   ├── index.js      # React Router and React DOM
+│   └── createLucideIcon.js
+├── components/
+│   └── aurora/       # All custom UI components
+│       ├── Navigation.js        # Fixed top nav bar with scroll-aware glass effect
+│       ├── Layout.js            # Root layout shell (wraps all pages)
+│       ├── Starfield.js         # Canvas-based animated star background
+│       ├── AuroraRibbon.js      # Animated gradient aurora effect
+│       ├── CursorTrail.js       # Mouse-follow particle trail
+│       ├── PageTransition.js    # Framer Motion route transition wrapper
+│       ├── ConstellationLayout.js   # Projects — interactive SVG constellation
+│       ├── SpectrumAnalyzer.js      # Skills — animated frequency analyzer bars
+│       ├── OrbitalPath.js           # Work history — horizontal orbital timeline
+│       ├── RadioDial.js             # Contact — interactive radio tuner
+│       ├── CaseStudyReader.js       # Case studies — long-form article reader
+│       ├── StarMapIndex.js          # Articles — stellar cartography grid index
+│       └── PolaroidTestimonials.js  # Testimonials — polaroid card layout
+├── pages/            # Static HTML stubs for each route (GitHub Pages compat)
+│   ├── About.html
+│   ├── Articles.html
+│   ├── CaseStudies.html
+│   ├── Contact.html
+│   ├── Projects.html
+│   ├── Skills.html
+│   └── Testimonials.html
+├── index.html        # Vite entry point — loads assets/main.js as ES module
+└── .nojekyll         # Disables Jekyll processing on GitHub Pages
+```
+
+The `pages/` directory contains static HTML stubs that each load the same `assets/main.js` entry point. This allows direct URL access to routes like `/about` or `/projects` when hosted on GitHub Pages, which doesn't support SPA-style 404 fallbacks natively.
+
+## Navigation Reference
+
+The navigation bar in Observatory uses astronomy-themed labels instead of conventional route names. All nine items are defined in the `Mo` array inside `Navigation.js`:
+
+| Route | Full Label | Short Label (nav bar) |
+|---|---|---|
+| `/` | Tonight's Forecast | Home |
+| `/about` | The Observer | About |
+| `/projects` | Logged Sightings | Projects |
+| `/skills` | Instruments | Skills |
+| `/work` | Expeditions | Work |
+| `/case-studies` | Field Reports | Cases |
+| `/articles` | Notebook | Notes |
+| `/testimonials` | Peer Reports | Peers |
+| `/contact` | Send a Signal | Contact |
+
+The navigation bar renders the **short label** as the visible link text. On hover, the full astronomy label appears below the link in a small tooltip. On mobile, the hamburger menu expands a full-screen overlay that renders the **full label** for each route.
+
+The active route is indicated by an animated underline (`layoutId="nav-indicator"`) powered by Framer Motion's shared layout animation with `type: "spring"`, `stiffness: 300`, `damping: 30`.
+
+## Building for Production
+
+When you're ready to deploy, build the production bundle:
+
+<CodeGroup>
+  ```bash npm
+  npm run build
+  ```
+
+  ```bash pnpm
+  pnpm build
+  ```
+</CodeGroup>
+
+Vite compiles and minifies all JavaScript and CSS into a `dist/` directory. The output is a fully static site with no server-side requirements — the entire build can be deployed to any static host (GitHub Pages, Netlify, Vercel, Cloudflare Pages, an S3 bucket, etc.).
+
+To preview the production build locally before deploying:
+
+<CodeGroup>
+  ```bash npm
+  npm run preview
+  ```
+
+  ```bash pnpm
+  pnpm preview
+  ```
+</CodeGroup>
+
+This serves the `dist/` folder with Vite's preview server at `http://localhost:4173`.

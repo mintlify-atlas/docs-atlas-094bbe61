@@ -1,0 +1,135 @@
+---
+title: "Radio Dial: Contact Channels as a Tunable Dial"
+sidebarTitle: "Radio Dial"
+description: "A circular radio dial metaphor for contact information. A spring-animated pointer rotates to the selected channel; switching triggers a noise static overlay on the detail panel."
+---
+
+`RadioDial` presents contact links through the metaphor of an analogue radio. A circular dial with tick marks occupies the left side of the layout. Clicking one of the small dot buttons positioned on the dial's circumference rotates the dial pointer to that channel's angle and updates the detail panel on the right with the channel's icon, label, and link.
+
+## Visual appearance
+
+The dial is a 256×256px circle built from several nested layers:
+
+1. **Outer ring** — a full-size `rounded-full` div with a 2px `space-700` border and an inset shadow
+2. **Tick marks** — an SVG overlay with 36 tick lines spaced 10° apart. Every 9th tick (90°) is longer and brighter
+3. **Inner rotor** — a Framer Motion `m.div` sized at `inset-4` (the inner circle) with a gradient from `space-700` to `space-900`. This div rotates based on `activeChannel.angle`
+4. **Pointer** — a 4×32px `aurora-turquoise` rectangle at the top center of the rotor, glowing with `shadow-[0_0_10px_rgba(45,212,191,0.8)]`
+5. **Channel buttons** — small invisible `button` elements positioned on the circumference at each channel's angle. Each contains a 2×2px dot: active channels are lit in `aurora-teal` with a glow; inactive channels are slate
+
+Channel dot positions are calculated using:
+
+```
+angle_rad = (channel.angle - 90) * π/180
+left = 50 + 40 * cos(angle_rad)   // as a percentage
+top  = 50 + 40 * sin(angle_rad)   // as a percentage
+```
+
+The `-90` offset rotates the coordinate system so `0°` points upward (12 o'clock).
+
+## Detail panel
+
+The right panel is a `space-900` card with a white/10 border. It contains:
+- A status bar at the top showing the channel ID in uppercase monospace and three indicator dots (the first pulses `aurora-teal` when active, turns red during channel switching)
+- The channel's Lucide icon and label heading
+- The channel's value (URL or handle) as a clickable link
+
+The panel content is keyed to the active channel's `id` inside a `m.div` with `opacity: 0 → 1` and `y: 10 → 0` over `0.2s` (with a 0.2s delay). This gives a smooth slide-up feel when switching channels.
+
+## Noise static effect
+
+When a channel switch occurs, a noise texture overlay is briefly flashed over the detail panel at 15% opacity using `mix-blend-screen`. The noise is an inline SVG `feTurbulence` filter applied to a rect, encoded as a `data:` URI in the `backgroundImage` style.
+
+The transition is implemented with a boolean `isStatic` state set to `true` on channel change and reset after 500 ms via `setTimeout`.
+
+## Animations
+
+| Effect | Implementation |
+|---|---|
+| Dial rotation | `m.div animate={{ rotate: activeChannel.angle }}`, spring `stiffness: 100, damping: 20` |
+| Static noise | `m.div animate={{ opacity: isStatic ? 0.15 : 0 }}` |
+| Panel content | `m.div initial/animate opacity + y`, keyed to channel `id` |
+
+## Where it's used
+
+`RadioDial` is the sole interactive element on the `/contact` route:
+
+```jsx
+// Contact page — assets/main.js
+function ContactPage() {
+  return (
+    <div className="max-w-5xl mx-auto w-full flex flex-col items-center justify-center min-h-[70vh]">
+      {/* page header */}
+      <RadioDial />
+    </div>
+  );
+}
+```
+
+## Data shape
+
+The channels array is defined in `components/aurora/RadioDial.js`. Each entry represents one contact channel.
+
+<ParamField body="id" type="string" required>
+  Unique identifier for the channel. Used as the React key and displayed as the frequency label in the panel status bar. Standard values: `'email'`, `'github'`, `'linkedin'`, `'twitter'`.
+</ParamField>
+
+<ParamField body="label" type="string" required>
+  Display name for the channel shown as the heading in the detail panel. E.g., `'Secure Channel'`, `'Code Repository'`.
+</ParamField>
+
+<ParamField body="value" type="string" required>
+  The contact value — a full URL for links, or an `@handle` for social channels. Rendered as a clickable anchor.
+</ParamField>
+
+<ParamField body="icon" type="LucideIcon" required>
+  A Lucide React icon component (imported directly, not as a string). Rendered at `size={24}` next to the channel label in the detail panel. Example: `Mail`, `Github`, `Linkedin`, `Twitter`.
+</ParamField>
+
+<ParamField body="angle" type="number" required>
+  The rotation angle (in degrees) that the dial pointer snaps to when this channel is selected. Defines both the dot position on the circumference and the rotor rotation. The default channels use `-45`, `0`, `45`, and `90`.
+</ParamField>
+
+## How to customize
+
+```js
+// components/aurora/RadioDial.js
+import { Mail, Github, Linkedin, Twitter } from 'lucide-react';
+
+const channels = [
+  {
+    id: 'email',
+    label: 'Secure Channel',
+    value: 'hello@observer.net',
+    icon: Mail,
+    angle: -45,
+  },
+  {
+    id: 'github',
+    label: 'Code Repository',
+    value: 'github.com/observer',
+    icon: Github,
+    angle: 0,
+  },
+  {
+    id: 'linkedin',
+    label: 'Professional Net',
+    value: 'linkedin.com/in/observer',
+    icon: Linkedin,
+    angle: 45,
+  },
+  {
+    id: 'twitter',
+    label: 'Public Broadcast',
+    value: '@observer_sys',
+    icon: Twitter,
+    angle: 90,
+  },
+];
+```
+
+## Layout tips
+
+- Keep channels to 3–5 entries. More channels will crowd the dot positions on the circumference.
+- Spread angles evenly (e.g., 90° apart for 4 channels) to prevent dots from visually overlapping.
+- The first entry in the array is the default selected channel on mount.
+- To add a new Lucide icon, import it at the top of the component file from `lucide-react`.

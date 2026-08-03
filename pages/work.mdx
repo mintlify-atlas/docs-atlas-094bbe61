@@ -1,0 +1,120 @@
+---
+title: "Work Page — Expeditions Orbital Path Timeline"
+sidebarTitle: "Work"
+description: "The Work page uses OrbitalPath to place each career role as a labelled node on an animated elliptical SVG orbit, forming a visual employment timeline."
+---
+
+# Work Page
+
+The **Work** page (`/work`) is accessed via the navigation label **"Expeditions"**. It uses the `OrbitalPath` component to present career history as a series of missions on an elliptical orbit. Each role is a node positioned around the ellipse at a specific angle, with a connecting line leading to a detail card.
+
+## OrbitalPath Component
+
+`OrbitalPath` (`components/aurora/OrbitalPath.js`) renders an SVG ellipse and places role nodes around its circumference. Key behaviours:
+
+- The ellipse rotates slowly on a CSS animation to give the impression of an object in motion.
+- Each node glows in its assigned `color` and pulses on hover.
+- Clicking a node expands a detail panel showing company, title, period, and description.
+- Nodes are ordered chronologically — the most recent role (smallest `angle` from the top) is visually prominent.
+
+## Angle Field
+
+The `angle` field places a role node on the ellipse in degrees, measured clockwise from the top (12 o'clock position):
+
+```
+         0° (top / most recent)
+          │
+   270°───┼───90°
+          │
+        180° (bottom / oldest)
+```
+
+The four demo roles span the ellipse at 30°, 90°, 150°, and 210°, distributing them evenly across the visible arc.
+
+## Work History Data
+
+The full roles array used by the page:
+
+```js
+// components/aurora/OrbitalPath.js
+const roles = [
+  {
+    id: 'r1',
+    company: 'Nova Systems',
+    title: 'Senior Systems Engineer',
+    period: '2022 - Present',
+    description: 'Architecting distributed microservices for high-throughput telemetry data processing. Reduced latency by 40%.',
+    angle: 30,
+    color: '#2dd4bf',
+  },
+  {
+    id: 'r2',
+    company: 'Starlight Dynamics',
+    title: 'Frontend Architect',
+    period: '2019 - 2022',
+    description: 'Led a team of 6 to rebuild the core visualization dashboard. Implemented complex WebGL rendering pipelines.',
+    angle: 90,
+    color: '#14b8a6',
+  },
+  {
+    id: 'r3',
+    company: 'AeroTech',
+    title: 'Full Stack Developer',
+    period: '2016 - 2019',
+    description: 'Developed internal tools for flight path analysis. Migrated legacy monolith to containerized services.',
+    angle: 150,
+    color: '#5eead4',
+  },
+  {
+    id: 'r4',
+    company: 'Orbital Inc',
+    title: 'Junior Developer',
+    period: '2014 - 2016',
+    description: 'Maintained legacy PHP systems and slowly introduced React to the frontend stack.',
+    angle: 210,
+    color: '#8b5cf6',
+  },
+];
+```
+
+## Data Shape Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | Unique identifier for the role node (e.g. `'r1'`). |
+| `company` | `string` | Employer name shown in the detail card header. |
+| `title` | `string` | Job title displayed beneath the company name. |
+| `period` | `string` | Employment period as a human-readable string (e.g. `'2022 - Present'`). |
+| `description` | `string` | Short summary of responsibilities and achievements shown in the expanded detail panel. |
+| `angle` | `number` | Position on the orbit ellipse in degrees (0–360), measured clockwise from the top. |
+| `color` | `string` | Hex colour for the node glow and connecting line. Use site palette colours for consistency. |
+
+## Role Timeline
+
+| Role | Company | Period | Angle |
+|------|---------|--------|-------|
+| Senior Systems Engineer | Nova Systems | 2022 – Present | 30° |
+| Frontend Architect | Starlight Dynamics | 2019 – 2022 | 90° |
+| Full Stack Developer | AeroTech | 2016 – 2019 | 150° |
+| Junior Developer | Orbital Inc | 2014 – 2016 | 210° |
+
+## Adding a New Role
+
+<Steps>
+  <Step title="Open OrbitalPath.js">
+    The roles array is near the top of `components/aurora/OrbitalPath.js`.
+  </Step>
+  <Step title="Add a new entry">
+    Prepend your latest role at the top of the array. Choose an `angle` close to `0°` (12 o'clock) to position the newest role at the most prominent point on the orbit.
+  </Step>
+  <Step title="Reassign existing angles">
+    Shift each existing role's angle clockwise by roughly `60°` to maintain even spacing when you add a fifth entry. For example: `30° → 60°`, `90° → 120°`, etc.
+  </Step>
+  <Step title="Pick a colour">
+    Use one of the site's aurora palette values (`#2dd4bf`, `#14b8a6`, `#5eead4`, `#8b5cf6`, `#a78bfa`) for visual consistency.
+  </Step>
+</Steps>
+
+<Tip>
+  Keep descriptions concise — two sentences maximum. Lead with an action verb ("Architected…", "Led…", "Reduced…") and include at least one concrete metric to give the entry measurable weight.
+</Tip>

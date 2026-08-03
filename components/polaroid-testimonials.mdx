@@ -1,0 +1,137 @@
+---
+title: "Polaroid Testimonials: Tilted Photo Card Quotes"
+sidebarTitle: "Polaroids"
+description: "Renders testimonials as physical polaroid photo cards with slight rotations, parallax x/y offsets, and hue-shifted gradient photo placeholders. Hover flattens and scales each card."
+---
+
+`PolaroidTestimonials` displays colleague testimonials as a row of polaroid-style photo cards. Each card is slightly rotated and offset to give the impression of a scatter of printed photographs. Hovering a card flattens its tilt and scales it up using Framer Motion's `whileHover` prop, bringing it visually to the front.
+
+## Visual appearance
+
+Cards are arranged in a `flex-wrap` row with `gap-8 md:gap-16` padding, centered on the page. Each card is 288px (`w-72`) wide, with a light `#e2e8f0` background (the characteristic off-white of a physical polaroid), `p-4` on the sides and top, and `pb-12` for the bottom caption area, mimicking the wider white border at the base.
+
+A small "tape" element is absolutely positioned at the top center — a 24×6px translucent white strip rotated slightly, simulating a piece of tape holding the polaroid to a surface.
+
+### Photo placeholder
+
+The upper portion of each card is a square (`aspect-square`) image area with a `border border-slate-300` and an `overflow: hidden`. The photo is replaced by a CSS gradient using the `imageHue` value:
+
+```css
+background: linear-gradient(135deg, hsl({imageHue}, 30%, 15%), hsl({imageHue + 40}, 60%, 30%));
+```
+
+A dot-pattern radial gradient overlay (`1px dots, 20px spacing`) at 30% opacity sits on top of the gradient, followed by a blurred white shine strip at the bottom half of the image, skewed at `-12°` to simulate a natural light reflection.
+
+### Caption area
+
+The quote text is rendered in `font-sans text-slate-800 text-sm italic` with `"` and `"` wrappers. The author name and role are positioned `absolute bottom-4 right-4` in a right-aligned block:
+- Author: `font-display font-bold text-slate-900 text-sm`
+- Role: `font-mono text-[10px] text-slate-500`
+
+## Animations
+
+| Effect | Implementation |
+|---|---|
+| Card entrance | `m.div initial: { opacity: 0, y: 50, rotate: 0 }` → `animate: { opacity: 1, y: card.y, rotate: card.rotation, x: card.x }`, spring type, staggered by `index × 0.2s` |
+| Hover lift | `m.div whileHover: { scale: 1.05, rotate: 0, zIndex: 50 }` |
+
+The initial animation sets `rotate: 0` so cards animate in straight before settling to their final tilt. The `whileHover` override snaps rotation back to zero and scales to 105%, creating a tactile "picking up a polaroid" feeling.
+
+## Where it's used
+
+`PolaroidTestimonials` is the primary content component on the `/testimonials` route:
+
+```jsx
+// Testimonials page — assets/main.js
+function TestimonialsPage() {
+  return (
+    <div className="max-w-6xl mx-auto w-full">
+      {/* page header */}
+      <PolaroidTestimonials />
+    </div>
+  );
+}
+```
+
+## Data shape
+
+The testimonials array is defined in `components/aurora/PolaroidTestimonials.js`.
+
+<ParamField body="id" type="string" required>
+  Unique identifier for the testimonial. Used as the React key.
+</ParamField>
+
+<ParamField body="author" type="string" required>
+  Full name or abbreviated name of the person giving the testimonial. Displayed in bold display font in the card caption.
+</ParamField>
+
+<ParamField body="role" type="string" required>
+  Job title and company string (e.g., `'Lead Architect @ Nova Systems'`). Displayed in small monospace below the author name.
+</ParamField>
+
+<ParamField body="text" type="string" required>
+  The testimonial quote body. Displayed in italic serif within `"` double quotation marks. Keep to 1–3 sentences to fit within the card without overflow.
+</ParamField>
+
+<ParamField body="rotation" type="number" required>
+  CSS rotation in degrees applied to the card at rest. Negative values tilt left; positive values tilt right. Typical range: `-5` to `5`. On hover, rotation is overridden to `0`.
+</ParamField>
+
+<ParamField body="x" type="number" required>
+  Framer Motion `x` offset in pixels applied to the card in the `animate` state. Use small values (`-20` to `20`) for a subtle horizontal displacement from the flex grid position.
+</ParamField>
+
+<ParamField body="y" type="number" required>
+  Framer Motion `y` offset in pixels applied to the card. Use small values (`0` to `50`) to stagger card heights slightly, creating a scattered feel.
+</ParamField>
+
+<ParamField body="imageHue" type="number" required>
+  CSS hue value (`0`–`360`) used to generate the photo placeholder gradient. The gradient spans from `hsl(imageHue, 30%, 15%)` to `hsl(imageHue + 40, 60%, 30%)`. Choose values that complement each other — teal (~190), purple (~260), and blue (~220) are used in the default set.
+</ParamField>
+
+## How to customize
+
+```js
+// components/aurora/PolaroidTestimonials.js
+
+const testimonials = [
+  {
+    id: 't1',
+    author: 'Dr. E. Vance',
+    role: 'Lead Architect @ Nova Systems',
+    text: 'Brought order to our chaotic frontend architecture. Their ability to see the entire system while sweating the micro-interactions is rare.',
+    rotation: -2,
+    x: 0,
+    y: 0,
+    imageHue: 190,
+  },
+  {
+    id: 't2',
+    author: 'S. Chen',
+    role: 'Product Manager',
+    text: "Communicates complex technical constraints with absolute clarity. Never says 'it's impossible', only 'here are the physics of that request'.",
+    rotation: 3,
+    x: 20,
+    y: 40,
+    imageHue: 260,
+  },
+  {
+    id: 't3',
+    author: 'M. Rodriguez',
+    role: 'Senior Developer',
+    text: "The cleanest code I've ever inherited. Every module felt like a well-calibrated instrument.",
+    rotation: -4,
+    x: -20,
+    y: 20,
+    imageHue: 220,
+  },
+];
+```
+
+## Layout tips
+
+- Alternate rotation signs (positive/negative) across cards to create a natural scattered feel.
+- Keep `rotation` values within `±6°` — steeper angles look unnatural and can clip the caption text.
+- Vary `y` offsets to stagger vertical positions. Avoid large `y` values that push cards out of the flex row container.
+- Choose `imageHue` values at least 30° apart to give each card a distinct color identity.
+- 3–5 cards work best — the `flex-wrap` layout handles any number, but more than 5 may require scrolling on mobile.

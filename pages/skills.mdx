@@ -1,0 +1,103 @@
+---
+title: "Skills Page — Instruments Spectrum Analyzer"
+sidebarTitle: "Skills"
+description: "The Skills page uses SpectrumAnalyzer to render an animated bar chart of 12 skills with proficiency shown as Hz values across four colour-coded categories."
+---
+
+# Skills Page
+
+The **Skills** page (`/skills`) is accessed via the navigation label **"Instruments"**. It renders the `SpectrumAnalyzer` component — an animated bar chart that treats each technical skill as a signal frequency. Proficiency levels are displayed on a 0–100 scale rendered in `Hz` units, reinforcing the radio-telescope metaphor that runs throughout Observatory.
+
+## SpectrumAnalyzer Component
+
+`SpectrumAnalyzer` (`components/aurora/SpectrumAnalyzer.js`) reads a `skills` array and renders an animated bar for each entry. Key behaviours:
+
+- Bars animate upward on page load with a staggered entrance.
+- Each bar is coloured according to its `category` using a gradient mapping (see table below).
+- Hovering a bar reveals a tooltip with the exact level value.
+- Skills are grouped visually by category with subtle section labels.
+
+## Proficiency Scale
+
+The `level` field is an integer from 0–100. The component renders it next to the bar label as a frequency value:
+
+```
+level: 95  →  displayed as  95 Hz
+level: 70  →  displayed as  70 Hz
+```
+
+This is purely a metaphor — higher Hz means stronger signal, i.e. higher proficiency.
+
+## Category → Gradient Colour Mapping
+
+| Category | Gradient | Colour tokens |
+|----------|----------|---------------|
+| `frontend` | Turquoise → Teal | `aurora-turquoise` → `aurora-teal` |
+| `backend` | Teal → Blue | `aurora-teal` → `aurora-blue` |
+| `systems` | Blue → Violet | `aurora-blue` → `aurora-violet` |
+| `design` | Violet → Magenta | `aurora-violet` → `aurora-magenta` |
+
+## Skills Data
+
+The full skills array used by the page:
+
+```js
+// components/aurora/SpectrumAnalyzer.js
+const skills = [
+  { name: 'React',      level: 95, category: 'frontend' },
+  { name: 'TypeScript', level: 90, category: 'frontend' },
+  { name: 'Tailwind',   level: 95, category: 'frontend' },
+  { name: 'GraphQL',    level: 75, category: 'frontend' },
+  { name: 'Node.js',    level: 85, category: 'backend'  },
+  { name: 'Go',         level: 75, category: 'backend'  },
+  { name: 'PostgreSQL', level: 80, category: 'backend'  },
+  { name: 'Docker',     level: 85, category: 'systems'  },
+  { name: 'Rust',       level: 70, category: 'systems'  },
+  { name: 'Kubernetes', level: 65, category: 'systems'  },
+  { name: 'AWS',        level: 70, category: 'systems'  },
+  { name: 'Figma',      level: 80, category: 'design'   },
+];
+```
+
+## Skills Summary
+
+<CardGroup cols={2}>
+  <Card title="Frontend" icon="browser">
+    React (95), TypeScript (90), Tailwind (95), GraphQL (75)
+  </Card>
+  <Card title="Backend" icon="server">
+    Node.js (85), Go (75), PostgreSQL (80)
+  </Card>
+  <Card title="Systems" icon="microchip">
+    Docker (85), Rust (70), Kubernetes (65), AWS (70)
+  </Card>
+  <Card title="Design" icon="pen-nib">
+    Figma (80)
+  </Card>
+</CardGroup>
+
+## Data Shape Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | `string` | Skill name displayed as the bar label. |
+| `level` | `number` | Proficiency from 0–100. Rendered in Hz units as a visual metaphor. |
+| `category` | `string` | One of `'frontend'`, `'backend'`, `'systems'`, `'design'`. Determines bar gradient colour. |
+
+## Adding or Updating Skills
+
+<Steps>
+  <Step title="Open SpectrumAnalyzer.js">
+    The data array is declared near the top of `components/aurora/SpectrumAnalyzer.js`.
+  </Step>
+  <Step title="Add or modify an entry">
+    Each entry requires all three fields: `name`, `level`, and `category`. Omitting `category` will cause the bar to render without a gradient colour.
+  </Step>
+  <Step title="Choose the right category">
+    Use one of the four valid category strings. If your skill doesn't fit neatly, pick the closest match — for example, `'GraphQL'` is listed under `'frontend'` because it primarily concerns API consumption on the client.
+  </Step>
+</Steps>
+
+<Warning>
+  The `level` field should be an honest representation of proficiency. The `SpectrumAnalyzer` is the most objective-looking component in the template — inflating all values to 95+ will make the chart look uniform and lose its visual impact.
+</Warning>

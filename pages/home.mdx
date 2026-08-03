@@ -1,0 +1,101 @@
+---
+title: "Home Page — Tonight's Forecast Hero Section"
+sidebarTitle: "Home"
+description: "The Observatory landing page featuring an animated hero with Starfield and AuroraRibbon backgrounds, headline text, and two CTA buttons."
+---
+
+# Home Page
+
+The **Home** page (`/`) is the first thing visitors see when they arrive at Observatory. It renders a full-viewport hero section under the navigation label **"Tonight's Forecast"**, establishing the space-telescope aesthetic with layered animated backgrounds, a bold headline, and two call-to-action buttons that route visitors deeper into the portfolio.
+
+## Hero Section
+
+The hero is composed of three visual layers stacked using absolute positioning:
+
+1. **Starfield** — a canvas-based background that renders hundreds of twinkling stars at randomised positions, sizes, and opacities.
+2. **AuroraRibbon** — an SVG ribbon of animated gradient bands rendered beneath the text, simulating a borealis curtain effect in the site's teal-to-violet palette.
+3. **Content overlay** — centred text and buttons rendered above both background layers.
+
+### Headline & Subtitle
+
+```jsx
+// In assets/main.js — search for the Home component
+<p className="text-aurora-turquoise font-mono text-sm tracking-[0.3em] uppercase mb-6">
+  Tonight's Forecast
+</p>
+<h1 className="font-display text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+  Building systems<br />
+  <span className="text-gradient">at high altitude.</span>
+</h1>
+```
+
+| Element | Value |
+|---------|-------|
+| Subtitle label | `Tonight's Forecast` |
+| Headline line 1 | `Building systems` |
+| Headline line 2 | `at high altitude.` |
+| Gradient span class | `text-gradient` (turquoise → teal) |
+
+### CTA Buttons
+
+Two buttons appear below the headline:
+
+| Button | Label | Destination |
+|--------|-------|-------------|
+| Primary | `VIEW SIGHTINGS` | `/projects` |
+| Secondary | `TRANSMIT SIGNAL` | `/contact` |
+
+The primary button carries a glowing `box-shadow` using the `aurora-turquoise` colour token. Both use the React Router `Link` component so navigation is client-side without a full page reload.
+
+### Scroll Indicator
+
+A chevron-down icon animates vertically at the bottom of the viewport to invite scrolling. It uses a simple CSS `animate-bounce` class and disappears once the user scrolls past the hero threshold (50 px).
+
+## Customising the Hero Text
+
+Open `assets/main.js` and locate the Home page component. The two pieces of text you are most likely to want to change are the headline and the subtitle label.
+
+<Steps>
+  <Step title="Open main.js">
+    The file is at `assets/main.js` in the repository root. Because it is a bundled file, search for the string `"Tonight's Forecast"` to jump to the right section.
+  </Step>
+  <Step title="Update the subtitle label">
+    Replace the string `"Tonight's Forecast"` with your preferred label. This text is also used as the navigation tooltip in the header.
+  </Step>
+  <Step title="Update the headline">
+    Find `"Building systems"` and `"at high altitude."` and replace them with your own copy. The second line is wrapped in a `<span className="text-gradient">` — keep that wrapper to retain the colour gradient.
+  </Step>
+  <Step title="Update the CTA destinations">
+    The `to` props on the two `Link` components point to `/projects` and `/contact`. Change these if you rename those routes.
+  </Step>
+</Steps>
+
+```jsx
+// Minimal hero text block — edit the strings marked ✏️
+<p className="... font-mono ...">
+  Tonight's Forecast   {/* ✏️ subtitle label */}
+</p>
+<h1 className="... font-display ...">
+  Building systems     {/* ✏️ headline line 1 */}
+  <span className="text-gradient">
+    at high altitude.  {/* ✏️ headline line 2 */}
+  </span>
+</h1>
+<Link to="/projects">VIEW SIGHTINGS</Link>   {/* ✏️ primary CTA */}
+<Link to="/contact">TRANSMIT SIGNAL</Link>   {/* ✏️ secondary CTA */}
+```
+
+<Tip>
+  The `text-gradient` class is defined in `tailwind.config.js` as a CSS `background-clip: text` gradient running from `aurora-turquoise` to `aurora-teal`. You can swap the gradient stops there to change the headline accent colour globally.
+</Tip>
+
+## Background Components
+
+<CardGroup cols={2}>
+  <Card title="Starfield" icon="star">
+    Canvas-rendered star field. Configure star count, speed, and minimum size in the `Starfield` component (`components/aurora/Starfield.js`).
+  </Card>
+  <Card title="AuroraRibbon" icon="wave-square">
+    SVG animated ribbon. Adjust band count, opacity, and animation duration in `components/aurora/AuroraRibbon.js`.
+  </Card>
+</CardGroup>

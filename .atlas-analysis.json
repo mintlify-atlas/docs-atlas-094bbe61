@@ -1,0 +1,81 @@
+{
+  "projectType": "saas",
+  "projectName": "Observatory",
+  "projectDescription": "A space-themed personal portfolio site for a senior systems engineer, featuring animated components for showcasing projects, skills, work history, case studies, articles, and contact information.",
+  "theme": "luma",
+  "primaryColor": "#2dd4bf",
+  "lightColor": "#5eead4",
+  "darkColor": "#03050d",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Overview",
+        "pages": ["introduction", "getting-started"]
+      },
+      {
+        "group": "Pages & Sections",
+        "pages": [
+          "pages/home",
+          "pages/about",
+          "pages/projects",
+          "pages/skills",
+          "pages/work",
+          "pages/case-studies",
+          "pages/articles",
+          "pages/testimonials",
+          "pages/contact"
+        ]
+      },
+      {
+        "group": "Components",
+        "pages": [
+          "components/overview",
+          "components/starfield",
+          "components/aurora-ribbon",
+          "components/constellation-layout",
+          "components/spectrum-analyzer",
+          "components/orbital-path",
+          "components/radio-dial",
+          "components/star-map-index",
+          "components/case-study-reader",
+          "components/polaroid-testimonials"
+        ]
+      },
+      {
+        "group": "Customization",
+        "pages": [
+          "customization/theme",
+          "customization/data",
+          "customization/deployment"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Animated starfield and aurora ribbon background effects",
+    "Interactive constellation map for showcasing projects",
+    "Spectrum analyzer visualization for technical skills",
+    "Orbital path component for work history timeline",
+    "Radio dial contact interface with multiple communication channels",
+    "Star map index for browsable articles",
+    "Polaroid-style testimonials display",
+    "Case study reader with darkroom film-strip aesthetic",
+    "Cursor trail and page transition animations",
+    "Space/astronomy-themed metaphors throughout the UI"
+  ],
+  "publicApiSurface": [
+    "ConstellationLayout — interactive star map of projects",
+    "SpectrumAnalyzer — bar chart visualization of skill frequencies",
+    "OrbitalPath — elliptical timeline of work history",
+    "RadioDial — contact channel selector with dial UI",
+    "CaseStudyReader — film-negative-styled case study viewer",
+    "StarMapIndex — coordinate-mapped article index",
+    "PolaroidTestimonials — animated polaroid testimonial cards",
+    "Starfield — animated star background component",
+    "AuroraRibbon — animated gradient ribbon background",
+    "Navigation — fixed header with aurora indicator",
+    "CursorTrail — motion-following cursor trail effect",
+    "PageTransition — route-change animation wrapper",
+    "Layout — root page layout wrapper"
+  ]
+}

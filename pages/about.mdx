@@ -1,0 +1,102 @@
+---
+title: "About Page — The Observer Identity & Bio"
+sidebarTitle: "About"
+description: "The About page shows a two-column layout with an ID card-style observer profile on the left and a full engineering bio with core directives on the right."
+---
+
+# About Page
+
+The **About** page (`/about`) is reached via the navigation label **"The Observer"**. It introduces the person behind the portfolio through a two-column grid: a styled identity card on the left and biographical text with engineering philosophy on the right.
+
+## Layout
+
+The page uses a CSS grid that switches from a single column on mobile to a `grid-cols-2` layout on `lg` breakpoints and above.
+
+| Column | Content |
+|--------|---------|
+| Left | Observer ID card (classification badge, status, avatar placeholder) |
+| Right | Role title, bio paragraphs, Core Directives list |
+
+## Observer ID Card
+
+The left panel renders as a dark bordered card resembling a system identification badge. It displays three fixed metadata fields:
+
+```text
+ID:     OBS-7742
+CLASS:  SYS_ENG
+STATUS: NOMINAL
+```
+
+A circular avatar placeholder sits above the fields, rendered as a gradient disc in the site's teal palette. Below the fields, a monospaced "CLEARANCE" indicator pulses to reinforce the classified-document aesthetic.
+
+<Note>
+  To replace the placeholder avatar with a real photograph, add an `<img>` or `next/image` element inside the avatar container div in `assets/main.js`. The container is 128 × 128 px with `rounded-full overflow-hidden`.
+</Note>
+
+## Bio Text
+
+The right column opens with the role title and specialisation statement:
+
+> **Senior systems engineer and interface architect**
+>
+> Specialisation: Large-scale frontend applications and the distributed systems that power them.
+
+The first bio paragraph reads:
+
+> "I build software the way one might build a telescope: with an obsession for precision, a respect for the vastness of the problem space, and a desire to make the complex visible and understandable."
+
+The second paragraph continues:
+
+> "For the past decade, I've specialized in architecting large-scale frontend applications and the distributed systems that power them. I believe that the best interfaces are quiet — they get out of the way and let the data speak."
+
+## Core Directives
+
+Four engineering principles are listed beneath the bio as a numbered manifest:
+
+<Steps>
+  <Step title="Directive 01">
+    **Minimize noise. Maximize signal.**
+  </Step>
+  <Step title="Directive 02">
+    **Systems should be resilient to the vacuum of edge cases.**
+  </Step>
+  <Step title="Directive 03">
+    **Performance is an accessibility feature.**
+  </Step>
+  <Step title="Directive 04">
+    **Leave the codebase cleaner than you found it.**
+  </Step>
+</Steps>
+
+## Updating the Profile Data
+
+All identity card fields and bio copy live in the Home page component inside `assets/main.js`. Search for the string `"OBS-7742"` to locate the block.
+
+```jsx
+// Identity card fields — edit the strings marked ✏️
+{ label: 'ID',     value: 'OBS-7742'  }   // ✏️ your unique identifier
+{ label: 'CLASS',  value: 'SYS_ENG'   }   // ✏️ your discipline / role class
+{ label: 'STATUS', value: 'NOMINAL'   }   // ✏️ current status string
+
+// Bio copy — two paragraph strings
+"I build software the way one might build a telescope..."  // ✏️ paragraph 1
+"For the past decade, I've specialized in..."              // ✏️ paragraph 2
+
+// Core Directives array
+"Minimize noise. Maximize signal."                         // ✏️ directive 1
+"Systems should be resilient to the vacuum of edge cases." // ✏️ directive 2
+"Performance is an accessibility feature."                 // ✏️ directive 3
+"Leave the codebase cleaner than you found it."            // ✏️ directive 4
+```
+
+<Tip>
+  The `CLASS` field is intended to reflect your primary discipline — for example `FRONTEND`, `DESIGN`, or `FULLSTACK`. Keep it short (≤ 10 characters) so it fits inside the badge without overflowing.
+</Tip>
+
+## Navigation Reference
+
+| Property | Value |
+|----------|-------|
+| Route | `/about` |
+| Nav label | `The Observer` |
+| Nav short label | `About` |

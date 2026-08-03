@@ -1,0 +1,113 @@
+---
+title: "Contact Page — Send a Signal Radio Dial"
+sidebarTitle: "Contact"
+description: "The Contact page uses a RadioDial component styled as a physical frequency dial with four channel buttons mapping to email, GitHub, LinkedIn, and Twitter."
+---
+
+# Contact Page
+
+The **Contact** page (`/contact`) is reached via the navigation label **"Send a Signal"**. It renders the `RadioDial` component — a physical dial metaphor that lets visitors tune to a communication channel. Pressing a channel button rotates the dial pointer to the corresponding `angle` and reveals the contact detail for that channel.
+
+## RadioDial Component
+
+`RadioDial` (`components/aurora/RadioDial.js`) presents four frequency buttons arranged around a central dial. Key behaviours:
+
+- Each button represents a contact channel (email, GitHub, LinkedIn, Twitter).
+- Clicking a button animates the dial pointer to the channel's `angle` using a CSS rotation transition.
+- The active channel's `label` and `value` are displayed in a readout panel below the dial, styled as a frequency display.
+- The dial uses the `angle` field to determine how far the pointer needle rotates from its resting position (the `email` channel at `-45°`).
+
+## Angle Field
+
+The `angle` field is the CSS `transform: rotate()` value applied to the dial pointer when the channel is selected. Values are relative to the dial's neutral/upright position:
+
+| Angle | Pointer position |
+|-------|-----------------|
+| `-45°` | Upper-left (default resting position) |
+| `0°` | Straight up / noon |
+| `45°` | Upper-right |
+| `90°` | Right / 3 o'clock |
+
+## Contact Channels Data
+
+```js
+// components/aurora/RadioDial.js
+const channels = [
+  {
+    id: 'email',
+    label: 'Secure Channel',
+    value: 'hello@observer.net',
+    angle: -45,
+  },
+  {
+    id: 'github',
+    label: 'Code Repository',
+    value: 'github.com/observer',
+    angle: 0,
+  },
+  {
+    id: 'linkedin',
+    label: 'Professional Net',
+    value: 'linkedin.com/in/observer',
+    angle: 45,
+  },
+  {
+    id: 'twitter',
+    label: 'Public Broadcast',
+    value: '@observer_sys',
+    angle: 90,
+  },
+];
+```
+
+<Note>
+  All contact values in the demo data (`hello@observer.net`, `github.com/observer`, etc.) are **placeholders**. Replace them with your real contact details before deploying. See the update steps below.
+</Note>
+
+## Data Shape Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | Unique identifier (e.g. `'email'`). Used as the button key and for the active channel indicator. |
+| `label` | `string` | Human-readable channel name displayed as the frequency label (e.g. `'Secure Channel'`). |
+| `value` | `string` | The actual contact detail — email address, URL, or handle — shown in the readout display. |
+| `icon` | `string` | *(Optional)* Lucide icon name rendered on the channel button. Defaults to a generic signal icon if omitted. |
+| `angle` | `number` | CSS rotation in degrees applied to the dial needle when this channel is active. |
+
+## Channel Summary
+
+| Channel | Label | Default value |
+|---------|-------|---------------|
+| `email` | Secure Channel | `hello@observer.net` |
+| `github` | Code Repository | `github.com/observer` |
+| `linkedin` | Professional Net | `linkedin.com/in/observer` |
+| `twitter` | Public Broadcast | `@observer_sys` |
+
+## Updating Your Contact Details
+
+<Steps>
+  <Step title="Open RadioDial.js">
+    The channels array is near the top of `components/aurora/RadioDial.js`.
+  </Step>
+  <Step title="Replace placeholder values">
+    Update each `value` string with your real contact detail. For email, use your actual address. For social links, use the full path or handle that matches the platform.
+  </Step>
+  <Step title="Update labels if needed">
+    The `label` strings are deliberately thematic (`'Secure Channel'`, `'Code Repository'`). You may keep them as-is or replace them with plain labels like `'Email'` and `'GitHub'` — your preference.
+  </Step>
+  <Step title="Add or remove channels">
+    To add a channel (e.g. Dribbble), append a new object to the array with a unique `id`, a `label`, your profile `value`, and an `angle` that continues the dial's sweep (e.g. `135°`). To remove a channel, delete its object from the array.
+  </Step>
+</Steps>
+
+<Warning>
+  Do not commit real personal contact information to a public repository. If the repo is public, use environment variables or a contact form API so your email address is not exposed in source code.
+</Warning>
+
+## Navigation Reference
+
+| Property | Value |
+|----------|-------|
+| Route | `/contact` |
+| Nav label | `Send a Signal` |
+| Nav short label | `Contact` |

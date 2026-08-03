@@ -1,0 +1,109 @@
+---
+title: "Case Studies Page — Field Reports Darkroom Reader"
+sidebarTitle: "Case Studies"
+description: "The Case Studies page uses CaseStudyReader with a film-negative sidebar and darkroom panel to present project post-mortems as structured field reports."
+---
+
+# Case Studies Page
+
+The **Case Studies** page (`/case-studies`) is reached via the navigation label **"Field Reports"**. It renders the `CaseStudyReader` component, which displays in-depth project post-mortems in a format inspired by scientific field reports and darkroom photo development — a film-negative sidebar for navigation and a wide content panel for the report body.
+
+## CaseStudyReader Component
+
+`CaseStudyReader` (`components/aurora/CaseStudyReader.js`) has two panels:
+
+- **Film-negative sidebar** (left) — a narrow panel listing all case study titles as selectable thumbnails styled to resemble photo negatives. Clicking a thumbnail loads that report in the main panel.
+- **Darkroom content panel** (right) — a wide reading area with high-contrast, low-ambient styling. Report sections are rendered sequentially from the `content` array.
+
+## Content Format
+
+Each case study's `content` field is an array of strings. Every string is a section that begins with a capitalised keyword followed by a colon and the section body:
+
+```
+'KEYWORD: Section body text here.'
+```
+
+The component splits on the first `:` to render the keyword as a styled heading and the remainder as paragraph text. The four standard keywords used in the demo data are:
+
+| Keyword | Purpose |
+|---------|---------|
+| `INITIAL OBSERVATION` | Sets the scene — the problem that existed before intervention. |
+| `HYPOTHESIS` | States the proposed solution and expected outcome. |
+| `METHODOLOGY` | Describes the approach taken and key decisions made. |
+| `RESULTS` | Quantifies the outcome with concrete metrics. |
+
+## Case Studies Data
+
+```js
+// components/aurora/CaseStudyReader.js
+const caseStudies = [
+  {
+    id: 'cs1',
+    title: 'Project Orion: Scaling Telemetry',
+    date: 'Stardate 4592.1',
+    content: [
+      'INITIAL OBSERVATION: The existing monolithic architecture was failing under the load of 10,000+ concurrent data streams.',
+      'HYPOTHESIS: Decoupling the ingestion pipeline into micro-services using Go and Kafka would increase throughput by an order of magnitude.',
+      'METHODOLOGY: We began a gradual strangler-fig migration. The first phase isolated the most volatile data stream (atmospheric pressure readings).',
+      'RESULTS: After a 3-month exposure period, latency dropped from 400ms to 12ms. The system now handles 50,000+ streams with nominal CPU load.',
+    ],
+  },
+  {
+    id: 'cs2',
+    title: 'Nebula UI: Design System Refactor',
+    date: 'Stardate 4610.4',
+    content: [
+      'INITIAL OBSERVATION: Inconsistent UI patterns across 14 different internal tools were causing severe operator confusion.',
+      'HYPOTHESIS: A centralized, highly constrained design system built on React and Tailwind would unify the visual language.',
+      'METHODOLOGY: Audited all existing interfaces. Extracted 24 core components. Enforced strict color contrast ratios for low-light environments.',
+      'RESULTS: Development velocity increased by 40%. Operator error rates dropped by 15%. The UI now feels like a single, cohesive instrument panel.',
+    ],
+  },
+];
+```
+
+## Case Studies at a Glance
+
+<AccordionGroup>
+  <Accordion title="Project Orion: Scaling Telemetry — Stardate 4592.1">
+    **Problem:** Monolithic architecture failing under 10,000+ concurrent data streams.
+
+    **Solution:** Strangler-fig migration to Go + Kafka micro-services, beginning with the most volatile stream.
+
+    **Outcome:** Latency reduced from **400 ms → 12 ms**. System now handles **50,000+ streams** at nominal CPU load.
+  </Accordion>
+  <Accordion title="Nebula UI: Design System Refactor — Stardate 4610.4">
+    **Problem:** Inconsistent UI patterns across 14 internal tools causing operator confusion.
+
+    **Solution:** Centralised React + Tailwind design system with 24 core components and strict colour contrast ratios.
+
+    **Outcome:** Development velocity up **40%**. Operator error rates down **15%**. Unified instrument-panel aesthetic.
+  </Accordion>
+</AccordionGroup>
+
+## Data Shape Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | Unique identifier (e.g. `'cs1'`). Used as the URL fragment when deep-linking to a specific report. |
+| `title` | `string` | Report title shown in the sidebar thumbnail and as the content panel heading. |
+| `date` | `string` | Display date in Stardate format (e.g. `'Stardate 4592.1'`). Purely cosmetic — use any string. |
+| `content` | `string[]` | Ordered array of section strings. Each string must begin with `'KEYWORD: '` for correct parsing. |
+
+## Adding a New Case Study
+
+<Steps>
+  <Step title="Open CaseStudyReader.js">
+    The array is at the top of `components/aurora/CaseStudyReader.js`.
+  </Step>
+  <Step title="Add a new object">
+    Assign a unique `id`, write a `title`, pick a `date` string, and populate `content` with at least two section strings.
+  </Step>
+  <Step title="Use the standard keywords">
+    Start each section with one of the four keywords (`INITIAL OBSERVATION`, `HYPOTHESIS`, `METHODOLOGY`, `RESULTS`) for a consistent report structure. You may add custom keywords, but keep them uppercase and follow the `KEYWORD: body` format.
+  </Step>
+</Steps>
+
+<Warning>
+  If a `content` string does not contain a `:` character, the component will render the entire string as a body paragraph with no section heading. Always include the keyword prefix.
+</Warning>

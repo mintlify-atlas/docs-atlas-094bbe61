@@ -1,0 +1,236 @@
+---
+title: "Updating Observatory Content and Portfolio Data"
+sidebarTitle: "Data"
+description: "Find and edit every piece of portfolio content in Observatory — projects, skills, work history, case studies, articles, testimonials, and contact channels."
+---
+
+All portfolio content in Observatory is stored as JavaScript arrays directly inside the Aurora component source files. There is no external CMS, API, or database — every piece of data you see on screen is a plain JS object that lives in a component file under `components/aurora/`. To update your portfolio, open the relevant file, edit the array, and rebuild.
+
+<Warning>
+  Observatory ships as compiled static files. Edit the source files, then run `npm run build` to regenerate the output.
+</Warning>
+
+<Steps>
+  <Step title="Personal info and bio (main.js)">
+    The hero headline, subtitle label, About page bio, and identity card values are embedded in the main app bundle (`assets/main.js` is the compiled output — edit the source before building).
+
+    Key fields to update in the source:
+
+    - **Hero headline** — currently `"Building systems at high altitude."`
+    - **Subtitle label** — currently `"Tonight's Forecast"` (displayed below the headline on the home page)
+    - **About page bio text** — the paragraphs on the `/about` route
+    - **Core Directives list** — the bullet-point capabilities listed in the About section
+    - **Identity card fields** — the `ID`, `CLASS`, and `STATUS` values shown in the About page instrument panel
+  </Step>
+
+  <Step title="Projects (components/aurora/ConstellationLayout.js)">
+    Projects are rendered as an interactive star map — each project is a star plotted at an `(x, y)` percentage position on the canvas. Connections between projects draw the constellation lines.
+
+    The demo data includes five projects: *Stellaris Engine*, *Nebula UI*, *Orbit Tracker*, *Void Protocol*, and *Aurora Analytics*.
+
+    Replace the `projects` array with your own entries:
+
+    ```js components/aurora/ConstellationLayout.js
+    const projects = [
+      {
+        id: 'p1',
+        title: 'Your Project Name',
+        description: 'A short description of what this project does.',
+        tech: ['React', 'TypeScript', 'Node.js'],
+        x: 20,           // % from left (0–100)
+        y: 30,           // % from top (0–100)
+        magnitude: 1.5,  // star size multiplier
+        connections: ['p2'] // IDs of related projects (draws constellation lines)
+      }
+    ];
+    ```
+
+    **Field reference:**
+
+    | Field | Type | Description |
+    |---|---|---|
+    | `id` | string | Unique identifier used to draw connection lines |
+    | `title` | string | Project name shown in the tooltip card |
+    | `description` | string | Short description shown in the tooltip |
+    | `tech` | string[] | Technology tags shown as pills in the tooltip |
+    | `x` | number | Horizontal position as a percentage (0–100) |
+    | `y` | number | Vertical position as a percentage (0–100) |
+    | `magnitude` | number | Star size multiplier — larger values render bigger stars |
+    | `connections` | string[] | Array of other project `id` values to connect with lines |
+  </Step>
+
+  <Step title="Skills (components/aurora/SpectrumAnalyzer.js)">
+    Skills are displayed as an animated spectrum analyzer bar chart. Each bar's height is driven by the `level` value, and its gradient color is determined by the `category`.
+
+    The demo data includes twelve skills across four categories: React (95), TypeScript (90), Node.js (85), Rust (70), Go (75), PostgreSQL (80), Docker (85), Kubernetes (65), Figma (80), Tailwind (95), GraphQL (75), and AWS (70).
+
+    ```js components/aurora/SpectrumAnalyzer.js
+    const skills = [
+      { name: 'React',      level: 95, category: 'frontend' },
+      { name: 'Node.js',    level: 85, category: 'backend'  },
+      { name: 'Docker',     level: 85, category: 'systems'  },
+      { name: 'Figma',      level: 80, category: 'design'   },
+      // categories: 'frontend' | 'backend' | 'systems' | 'design'
+    ];
+    ```
+
+    **Category gradient mapping:**
+
+    | Category | Gradient |
+    |---|---|
+    | `frontend` | `aurora-turquoise` → `aurora-teal` |
+    | `backend` | `aurora-teal` → `blue-500` |
+    | `systems` | `blue-500` → `aurora-violet` |
+    | `design` | `aurora-violet` → `aurora-magenta` |
+  </Step>
+
+  <Step title="Work history (components/aurora/OrbitalPath.js)">
+    Work history is displayed as an interactive orbital diagram. Each role is a planet on an elliptical orbit, positioned by its `angle` value (0–360 degrees). Clicking a role selects it and shows details in the side panel.
+
+    The demo data includes four roles: Senior Systems Engineer at Nova Systems (2022–Present), Frontend Architect at Starlight Dynamics (2019–2022), Full Stack Developer at AeroTech (2016–2019), and Junior Developer at Orbital Inc (2014–2016).
+
+    ```js components/aurora/OrbitalPath.js
+    const roles = [
+      {
+        id: 'r1',
+        company: 'Your Company',
+        title: 'Your Title',
+        period: '2022 - Present',
+        description: 'What you did here.',
+        angle: 30,         // position on the orbit ellipse (0–360 degrees)
+        color: '#2dd4bf'   // accent color hex for the orbital dot and side panel bar
+      }
+    ];
+    ```
+
+    Space the `angle` values evenly (e.g. 30, 90, 150, 210 for four roles) to avoid overlapping orbital markers.
+  </Step>
+
+  <Step title="Contact channels (components/aurora/RadioDial.js)">
+    Contact links are displayed as a rotating radio dial — each channel is a position on the dial. The dial animates to the selected channel's `angle` when a user clicks its marker.
+
+    The demo data includes four channels: email (`hello@observer.net`), GitHub (`github.com/observer`), LinkedIn (`linkedin.com/in/observer`), and Twitter (`@observer_sys`).
+
+    ```js components/aurora/RadioDial.js
+    const channels = [
+      {
+        id: 'email',
+        label: 'Secure Channel',
+        value: 'you@yourdomain.com',
+        icon: MailIcon,
+        angle: -45
+      },
+      {
+        id: 'github',
+        label: 'Code Repository',
+        value: 'github.com/yourusername',
+        icon: GithubIcon,
+        angle: 0
+      },
+      {
+        id: 'linkedin',
+        label: 'Professional Net',
+        value: 'linkedin.com/in/yourprofile',
+        icon: LinkedinIcon,
+        angle: 45
+      },
+      {
+        id: 'twitter',
+        label: 'Public Broadcast',
+        value: '@yourhandle',
+        icon: TwitterIcon,
+        angle: 90
+      }
+    ];
+    ```
+
+    The `angle` controls where the channel's dot appears around the dial ring and where the needle rotates to when that channel is active. Keep values spread 45° apart to avoid overlap.
+  </Step>
+
+  <Step title="Case studies (components/aurora/CaseStudyReader.js)">
+    Case studies are displayed in a film-grain reader panel with an "Exposure Index" sidebar for switching between entries. Each study's `content` array contains paragraphs prefixed with a label in `LABEL: body` format — the reader renders the label in monospace and the body in body text.
+
+    The demo data includes two studies: *Project Orion: Scaling Telemetry* (Stardate 4592.1) and *Nebula UI: Design System Refactor* (Stardate 4610.4).
+
+    ```js components/aurora/CaseStudyReader.js
+    const studies = [
+      {
+        id: 'cs1',
+        title: 'Project Name: Challenge Description',
+        date: 'Stardate 4592.1',
+        content: [
+          'INITIAL OBSERVATION: Describe the problem you encountered.',
+          'HYPOTHESIS: What you thought would work.',
+          'METHODOLOGY: How you approached solving it.',
+          'RESULTS: What actually happened and what you shipped.'
+        ]
+      }
+    ];
+    ```
+
+    Each string in `content` is split on the first `: ` — the part before becomes the monospace label tag, the part after becomes the body paragraph. You can use any label names you like, or omit the `LABEL: ` prefix entirely to render a plain paragraph.
+  </Step>
+
+  <Step title="Articles (components/aurora/StarMapIndex.js)">
+    Articles are displayed as a navigable star map — each article is a star plotted at an `(x, y)` percentage position. The `magnitude` value controls both the star's rendered size and the `MAG` value shown in the hover tooltip.
+
+    The demo data includes seven articles covering TypeScript, WebGL, design, architecture, UI, backend, and tooling topics.
+
+    ```js components/aurora/StarMapIndex.js
+    const articles = [
+      {
+        id: 'a1',
+        title: 'Your Article Title',
+        topic: 'Topic',      // displayed as a tag in the tooltip
+        magnitude: 3,        // 1 (short/brief) to 5 (long/deep-dive)
+        x: 20,               // % from left (0–100)
+        y: 30                // % from top (0–100)
+      }
+    ];
+    ```
+
+    Use `magnitude` as an indicator of article length or depth — a magnitude 1 star renders small and is a quick note; magnitude 5 is a bright, prominent star for a major deep-dive post.
+  </Step>
+
+  <Step title="Testimonials (components/aurora/PolaroidTestimonials.js)">
+    Testimonials are displayed as Polaroid-style photos with slight random tilts. Each card animates in from below and settles at its `rotation` and `(x, y)` offset. The placeholder photo is a CSS gradient generated from the `imageHue` value.
+
+    The demo data includes three testimonials from Dr. E. Vance (Lead Architect @ Nova Systems), S. Chen (Product Manager), and M. Rodriguez (Senior Developer).
+
+    ```js components/aurora/PolaroidTestimonials.js
+    const testimonials = [
+      {
+        id: 't1',
+        author: 'Person Name',
+        role: 'Title @ Company',
+        text: 'What they said about your work.',
+        rotation: -2,     // slight card tilt in degrees (negative = left, positive = right)
+        x: 0, y: 0,       // Framer Motion translate offset in px
+        imageHue: 190     // CSS hue (0–360) for the placeholder photo gradient
+      }
+    ];
+    ```
+
+    Vary `rotation` between roughly `-5` and `5` and stagger `x`/`y` offsets to achieve the natural scattered-Polaroid look. Each `imageHue` generates a unique dark gradient so no two placeholder photos look the same.
+  </Step>
+
+  <Step title="Navigation labels (components/aurora/Navigation.js)">
+    Observatory's navigation uses thematic space-themed labels instead of plain page names. Each nav item has two labels: a `label` (the full thematic name shown on hover and in the mobile menu) and a `short` (the compact version shown in the desktop nav bar).
+
+    ```js components/aurora/Navigation.js
+    const navItems = [
+      { path: '/',            label: "Tonight's Forecast", short: 'Home'     },
+      { path: '/about',       label: 'The Observer',       short: 'About'    },
+      { path: '/projects',    label: 'Logged Sightings',   short: 'Projects' },
+      { path: '/skills',      label: 'Instruments',        short: 'Skills'   },
+      { path: '/work',        label: 'Expeditions',        short: 'Work'     },
+      { path: '/case-studies',label: 'Field Reports',      short: 'Cases'    },
+      { path: '/articles',    label: 'Notebook',           short: 'Notes'    },
+      { path: '/testimonials',label: 'Peer Reports',       short: 'Peers'    },
+      { path: '/contact',     label: 'Send a Signal',      short: 'Contact'  },
+    ];
+    ```
+
+    Edit the `label` and `short` fields freely — the `path` values must match your React Router route definitions. Do not change the `path` for a route unless you also update the corresponding `<Route>` in the app's router config.
+  </Step>
+</Steps>

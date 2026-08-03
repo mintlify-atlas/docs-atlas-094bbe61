@@ -1,0 +1,68 @@
+---
+title: "Starfield: Animated Canvas Star Background"
+sidebarTitle: "Starfield"
+description: "A full-screen HTML5 canvas that renders hundreds of twinkling, parallax-responsive stars and occasional shooting-star streaks. No props required."
+---
+
+`Starfield` is a purely decorative background component that renders an infinite field of stars onto a fixed `<canvas>` element. It sits at `z-index: 0` behind all page content and responds to mouse movement with a subtle parallax effect, giving the star field a sense of depth.
+
+## Visual appearance
+
+The canvas is filled with hundreds of small white dots of varying sizes (0.1–1.6 px radius) and opacities, each assigned a random `depth` value between 1 and 4. On every animation frame, the canvas is cleared with a semi-transparent dark fill (`rgba(5, 8, 22, 0.2)`), which creates the twinkling fade effect as stars oscillate their opacity by ±0.05 each frame.
+
+Stars drift upward at a slow, randomized speed and wrap back to the bottom when they leave the top of the viewport. Roughly 1% of stars are rendered in `aurora-turquoise` (`rgba(45, 212, 191, …)`) instead of white, adding a subtle teal shimmer to the field.
+
+## Shooting stars
+
+Approximately every 200 frames (5% chance per frame), a shooting star is drawn as a short gradient line in the upper half of the canvas. The streak uses a `LinearGradient` from transparent white at the tail to `rgba(45, 212, 191, 0.8)` to solid white at the tip, at a ~45° angle.
+
+## Parallax response
+
+The component tracks the cursor position via a `mousemove` listener and smoothly interpolates the star field's `x`/`y` offset toward the target using a 5% lerp factor each frame. Stars at higher `depth` values shift further, creating a multi-plane parallax effect.
+
+## Where it's used
+
+`Starfield` is rendered inside the Home page (`/`) hero section alongside [`AuroraRibbon`](/components/aurora-ribbon). Both are purely positional — they don't accept props and share the same hero container:
+
+```jsx
+// Home page hero — assets/main.js
+function HomePage() {
+  return (
+    <div className="relative min-h-[80vh] flex flex-col justify-center">
+      <Starfield />
+      <AuroraRibbon />
+      {/* hero text content */}
+    </div>
+  );
+}
+```
+
+## Adding Starfield to another section
+
+Because `Starfield` uses `position: fixed`, it always covers the full viewport. To scope it to a specific section instead, wrap it in a `position: relative` container with `overflow: hidden` and change the canvas's `position` to `absolute` in the source file.
+
+```js
+// components/aurora/Starfield.js
+// The canvas element rendered by the component:
+<canvas
+  ref={canvasRef}
+  className="fixed inset-0 z-0 pointer-events-none"
+  style={{ background: 'transparent' }}
+/>
+```
+
+## Animations
+
+| Effect | Mechanism |
+|---|---|
+| Star twinkle | Per-frame opacity delta `±0.05`, clamped to `[0.1, 1]` |
+| Upward drift | `star.y -= star.speed` each frame, `speed` in range `[0.01, 0.06]` |
+| Parallax | Linear interpolation toward `mousemove` target at 5% per frame |
+| Shooting star | `requestAnimationFrame` canvas draw with a teal `LinearGradient` stroke |
+
+## Technical notes
+
+- Uses `requestAnimationFrame` for the animation loop; cleans up via `cancelAnimationFrame` on unmount.
+- Listens to `window.resize` to recalculate canvas dimensions and regenerate the star array.
+- Star density is proportional to viewport area: `Math.floor(width * height / 4000)` stars are generated.
+- Both the `resize` listener and the `mousemove` listener are removed on component unmount.

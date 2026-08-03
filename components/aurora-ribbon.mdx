@@ -1,0 +1,78 @@
+---
+title: "Aurora Ribbon: Animated Borealis Background"
+sidebarTitle: "Aurora Ribbon"
+description: "An SVG-based animated ribbon that mimics the Aurora Borealis using four wave paths, aurora Tailwind color tokens, and a Gaussian blur for a luminous glow."
+---
+
+`AuroraRibbon` is a decorative background component that renders four undulating wave shapes styled after the northern lights. It sits behind all page content using `position: absolute` and blends into the scene with `mix-blend-screen` and 70% opacity, so it glows without overwhelming the text.
+
+## Visual appearance
+
+The component renders an `<svg>` element that is 150% the height of the viewport, offset upward by 20vh. Inside it, four `<path>` elements are filled with vertical `<linearGradient>` definitions — each gradient transitions from an opaque aurora color at the top to fully transparent at the bottom, creating the characteristic curtain-like fade.
+
+A `feGaussianBlur` SVG filter with `stdDeviation="40"` is applied to all four paths via a `<g filter="url(#blur)">` wrapper, giving the ribbons their soft, luminous appearance.
+
+## The four ribbon layers
+
+| Layer | Color | Opacity | Amplitude | Speed |
+|---|---|---|---|---|
+| 0 | `#14b8a6` (aurora-teal) | 0.4 | 120 px | 0.001 |
+| 1 | `#2dd4bf` (aurora-turquoise) | 0.6 | 150 px | 0.0015 |
+| 2 | `#5eead4` (aurora-seafoam) | 0.3 | 100 px | 0.0008 |
+| 3 | `#8b5cf6` (aurora-violet) | 0.15 | 80 px | 0.0012 |
+
+The slightly brighter second layer (turquoise, 0.6 opacity) acts as the dominant ribbon, while the violet fourth layer adds a subtle purple undertone at lower frequencies.
+
+## Animation
+
+The wave shapes are not driven by Framer Motion. Instead, a `requestAnimationFrame` loop runs outside React's render cycle and directly mutates the SVG `d` attributes of each `<path>` on every tick:
+
+1. A shared time counter `s` increments by `16` each frame (approximately 60 fps).
+2. For each ribbon, the component samples `Math.sin(x * frequency + s * speed) * amplitude` at 100 px intervals across the full viewport width.
+3. A secondary `Math.cos` term at half the frequency and 1.2× the speed adds an organic secondary wobble.
+4. The resulting point list is assembled into a closed SVG path that sweeps to the bottom of the canvas.
+
+The loop is started on mount and cancelled on unmount via `cancelAnimationFrame`.
+
+## Where it's used
+
+`AuroraRibbon` is used exclusively in the Home page (`/`) hero section, layered behind `Starfield`:
+
+```jsx
+// Home page hero — assets/main.js
+function HomePage() {
+  return (
+    <div className="relative min-h-[80vh] flex flex-col justify-center">
+      <Starfield />
+      <AuroraRibbon />
+      {/* hero text at z-10 */}
+    </div>
+  );
+}
+```
+
+## Adding AuroraRibbon to another page
+
+`AuroraRibbon` is self-contained and works inside any `position: relative` container. The SVG is absolutely positioned and will fill its nearest positioned ancestor.
+
+```js
+// components/aurora/AuroraRibbon.js
+// Drop it inside any section that has `position: relative`:
+<div className="relative overflow-hidden">
+  <AuroraRibbon />
+  <div className="relative z-10">
+    {/* your content */}
+  </div>
+</div>
+```
+
+## Tailwind color tokens used
+
+| Token | Hex | Role |
+|---|---|---|
+| `aurora-teal` | `#14b8a6` | Primary ribbon base |
+| `aurora-turquoise` | `#2dd4bf` | Dominant bright ribbon |
+| `aurora-seafoam` | `#5eead4` | Highlight ribbon |
+| `aurora-violet` | `#8b5cf6` | Purple undertone ribbon |
+
+These tokens are defined in `tailwind.config.js` under the `extend.colors.aurora` namespace and are available to all Aurora components.

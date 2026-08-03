@@ -1,0 +1,137 @@
+---
+title: "Case Study Reader: Darkroom Film-Strip Viewer"
+sidebarTitle: "Case Study Reader"
+description: "A two-panel case study viewer with a film-strip sidebar index and a darkroom content panel. Selecting an entry triggers a photographic development animation: blur to sharp, desaturated to color."
+---
+
+`CaseStudyReader` presents long-form case studies using the metaphor of a photographic darkroom. A narrow film-strip sidebar on the left lists all available studies. Clicking an entry exposes the content in the right-hand darkroom panel — it emerges from a blurred, high-contrast, desaturated state to full clarity, as if a photograph is developing under a red safelight.
+
+## Visual appearance
+
+The component renders a full-width flex container that stacks vertically on mobile and switches to a two-column layout on `lg` breakpoints.
+
+### Film-strip sidebar
+
+The left panel is one-quarter of the total width on large screens. It has an "EXPOSURE INDEX" heading in monospace and a stack of film-strip entry buttons. Each button features:
+- A left-side strip of 6 sprocket holes (`w-1.5 h-2` black rounded rectangles) at 20% opacity, simulating 35mm film
+- A date label in `aurora-teal` monospace (10px)
+- The case study title in display font — active entries are `aurora-turquoise`; inactive entries are `slate-300` with a white hover state
+- An active border `aurora-teal` with a faint teal background tint; inactive entries have a `white/10` border
+
+### Darkroom content panel
+
+The right panel takes three-quarters of the width on large screens. It has a near-black `#0a0a0a` background with a `white/5` border and a subtle red-tinted glow blob at the top center (`red-900/10 blur-[100px]`), evoking the warm red light of a darkroom.
+
+A persistent film-grain noise overlay (`opacity-[0.04] mix-blend-overlay`) adds texture to the dark background at all times.
+
+The active entry's content is wrapped in `AnimatePresence mode="wait"` and rendered inside a `m.div` keyed to the entry `id`.
+
+Content sections are parsed by splitting each string on `': '`. The portion before the first colon is rendered as a monospace `slate-500` label prefix; the remainder is rendered as plain `slate-300` body text. Each section staggered by `0.5s` with a `1s` base delay, animating from `opacity: 0, y: 10` to `opacity: 1, y: 0` over `1.5s`.
+
+## Development animation
+
+When an entry is selected, the `m.div` exits with `opacity: 0, filter: blur(5px)` and the incoming entry enters with a dramatic 2.5 second ease-out animation:
+
+```
+initial:  opacity: 0, filter: 'blur(10px) contrast(200%) grayscale(100%)'
+animate:  opacity: 1, filter: 'blur(0px) contrast(100%) grayscale(0%)'
+transition: { duration: 2.5, ease: 'easeOut' }
+```
+
+This mimics the look of a photograph slowly developing in a chemical bath: high-contrast black-and-white resolving into a sharp, full-color image.
+
+## Content format
+
+Each content section string uses the format `KEYWORD: body text`. The component splits on `': '` and renders the keyword as a monospace prefix label:
+
+```
+"INITIAL OBSERVATION: The existing monolithic architecture was failing..."
+→ renders as: [INITIAL OBSERVATION:] The existing monolithic architecture was failing...
+
+"RESULTS: After a 3-month exposure period, latency dropped from 400ms to 12ms..."
+→ renders as: [RESULTS:] After a 3-month exposure period, latency dropped from 400ms to 12ms...
+```
+
+If a string contains no colon, it is rendered as plain body text without a label prefix.
+
+## Animations
+
+| Effect | Implementation |
+|---|---|
+| Development reveal | `m.div` `blur/contrast/grayscale` filter animation, `2.5s easeOut` |
+| Section stagger | Per-section `m.div` `opacity + y`, base `1s` delay + `index × 0.5s` |
+| Panel exit | `m.div` exit `opacity: 0, filter: blur(5px)` |
+| Entry transition | `AnimatePresence mode="wait"`, keyed to `entry.id` |
+
+## Where it's used
+
+`CaseStudyReader` is the primary content component on the `/case-studies` route:
+
+```jsx
+// Case Studies page — assets/main.js
+function CaseStudiesPage() {
+  return (
+    <div className="max-w-6xl mx-auto w-full">
+      {/* page header */}
+      <CaseStudyReader />
+    </div>
+  );
+}
+```
+
+## Data shape
+
+The case studies array is defined in `components/aurora/CaseStudyReader.js`.
+
+<ParamField body="id" type="string" required>
+  Unique identifier for the case study. Used as the React key and as the `AnimatePresence` key to trigger the development animation.
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Case study title displayed in both the sidebar entry button and as the `h2` heading in the darkroom panel.
+</ParamField>
+
+<ParamField body="date" type="string" required>
+  Date label in "stardate" format (e.g., `'Stardate 4592.1'`). Displayed above the title in the darkroom header and as a small monospace label in the sidebar entry.
+</ParamField>
+
+<ParamField body="content" type="string[]" required>
+  Array of section strings. Each string should follow the `KEYWORD: body text` format. The keyword becomes a monospace prefix label; the body text follows inline. Sections are animated in sequentially with a 0.5s stagger after a 1s base delay.
+</ParamField>
+
+## How to customize
+
+```js
+// components/aurora/CaseStudyReader.js
+
+const caseStudies = [
+  {
+    id: 'cs1',
+    title: 'Project Orion: Scaling Telemetry',
+    date: 'Stardate 4592.1',
+    content: [
+      'INITIAL OBSERVATION: The existing monolithic architecture was failing under the load of 10,000+ concurrent data streams.',
+      'HYPOTHESIS: Decoupling the ingestion pipeline into micro-services using Go and Kafka would increase throughput by an order of magnitude.',
+      'METHODOLOGY: We began a gradual strangler-fig migration. The first phase isolated the most volatile data stream (atmospheric pressure readings).',
+      'RESULTS: After a 3-month exposure period, latency dropped from 400ms to 12ms. The system now handles 50,000+ streams with nominal CPU load.',
+    ],
+  },
+  {
+    id: 'cs2',
+    title: 'Nebula UI: Design System Refactor',
+    date: 'Stardate 4610.4',
+    content: [
+      'INITIAL OBSERVATION: Inconsistent UI patterns across 14 different internal tools were causing severe operator confusion.',
+      'HYPOTHESIS: A centralized, highly constrained design system built on React and Tailwind would unify the visual language.',
+      'METHODOLOGY: Audited all existing interfaces. Extracted 24 core components. Enforced strict color contrast ratios for low-light environments.',
+      'RESULTS: Development velocity increased by 40%. Operator error rates dropped by 15%. The UI now feels like a single, cohesive instrument panel.',
+    ],
+  },
+];
+```
+
+## Layout tips
+
+- Use 3–6 content sections per case study for the best reading rhythm. The stagger delay means very long studies take longer to fully reveal.
+- The `KEYWORD:` labels work best as single words or short phrases in uppercase: `PROBLEM:`, `APPROACH:`, `OUTCOME:`, etc.
+- The first entry in the array is selected by default on mount.

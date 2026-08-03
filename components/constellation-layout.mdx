@@ -1,0 +1,154 @@
+---
+title: "Constellation Layout: Interactive Project Star Map"
+sidebarTitle: "Constellation"
+description: "Renders portfolio projects as an interactive star constellation. Each project is a star node positioned by coordinates, sized by magnitude, with hover tooltips and animated SVG connection lines."
+---
+
+`ConstellationLayout` is the most visually complex Aurora component. It renders a portfolio of projects as a navigable star map inside a fixed-height container. Each project is a glowing star node placed at an `(x, y)` percentage position. Animated SVG dashed lines connect related projects, and hovering a star reveals a glassmorphism tooltip with the project title, description, tech stack, and source/deploy links.
+
+## Visual appearance
+
+The component renders a `600px` tall container (700px on `md` viewports) with a `space-900/50` background, a subtle white border, and `overflow: hidden`. The SVG connection lines are rendered in a full-bleed `<svg>` layer using `pointer-events: none`.
+
+Each star node consists of:
+- A blurred `aurora-turquoise` glow ring (visible on hover and when active)
+- A solid white circle sized at `magnitude × 8` pixels
+- A monospace label below the star that fades in on hover and disappears when the tooltip is open
+
+The tooltip is a 288px wide `space-800/95` glassmorphism card with a `aurora-teal/30` border. It renders the project title, description, tech tag pills, and two icon links (GitHub source and external deploy).
+
+## Animations
+
+| Effect | Implementation |
+|---|---|
+| Star entry | `m.button` with `initial: scale(0), opacity(0)` → `animate: scale(1), opacity(1)`, `spring` type, staggered by `index × 0.1s + 1s` |
+| Connection line draw | `m.line` with `initial: pathLength(0), opacity(0)` → `animate: pathLength(1), opacity(1)`, `2s easeInOut`, staggered by `index × 0.2s` |
+| Tooltip entry/exit | `m.div` inside `AnimatePresence` with `opacity`, `y(10)`, and `scale(0.95)` over `0.2s` |
+| Active glow ring | CSS `transition-all duration-500` on `opacity` and `scale` classes |
+
+Connection lines use `strokeDasharray="4 4"` and animate `pathLength` from 0 to 1, making the dashes appear to draw themselves outward from the source node.
+
+## Where it's used
+
+`ConstellationLayout` is the primary interactive element on the `/projects` route:
+
+```jsx
+// Projects page — assets/main.js
+function ProjectsPage() {
+  return (
+    <div className="max-w-6xl mx-auto w-full">
+      {/* page header */}
+      <ConstellationLayout />
+    </div>
+  );
+}
+```
+
+## Data shape
+
+The projects data array is defined directly in `components/aurora/ConstellationLayout.js`. Edit this array to add, remove, or reposition projects.
+
+<ParamField body="id" type="string" required>
+  Unique identifier for the node. Referenced by other nodes in their `connections` array (e.g., `'p1'`).
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Project name. Displayed as the small label below the star and as the heading in the tooltip.
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  Short project description shown in the tooltip body. Keep to 1–2 sentences for best layout.
+</ParamField>
+
+<ParamField body="tech" type="string[]" required>
+  Array of technology tags displayed as small pill badges inside the tooltip. Example: `['React', 'TypeScript', 'GraphQL']`.
+</ParamField>
+
+<ParamField body="x" type="number" required>
+  Horizontal position as a percentage of the container width (`0`–`100`). Maps to `left: x%` via absolute positioning.
+</ParamField>
+
+<ParamField body="y" type="number" required>
+  Vertical position as a percentage of the container height (`0`–`100`). Maps to `top: y%` via absolute positioning.
+</ParamField>
+
+<ParamField body="magnitude" type="number" required>
+  Visual size multiplier. The star circle is rendered at `magnitude × 8` pixels in both width and height. A value of `1.0` produces an 8px star; `2.0` produces a 16px star.
+</ParamField>
+
+<ParamField body="connections" type="string[]" required>
+  Array of node IDs this project is connected to. The component deduplicates pairs (sorted alphabetically) so you only need to declare connections on one side. Lines are drawn between connected pairs.
+</ParamField>
+
+## How to customize
+
+Edit the `projects` array in the component file. Connection lines are automatically computed from the `connections` arrays — no need to define lines separately.
+
+```js
+// components/aurora/ConstellationLayout.js
+
+const projects = [
+  {
+    id: 'p1',
+    title: 'Stellaris Engine',
+    description:
+      'A high-performance rendering engine for vast data sets, built with WebGL and Rust.',
+    tech: ['WebGL', 'Rust', 'WASM'],
+    x: 20,
+    y: 30,
+    magnitude: 1.5,
+    connections: ['p2', 'p4'],
+  },
+  {
+    id: 'p2',
+    title: 'Nebula UI',
+    description:
+      'Component library designed for deep-space telemetry applications. High contrast, low noise.',
+    tech: ['React', 'Tailwind', 'Framer'],
+    x: 45,
+    y: 15,
+    magnitude: 1.2,
+    connections: ['p1', 'p3'],
+  },
+  {
+    id: 'p3',
+    title: 'Orbit Tracker',
+    description:
+      'Real-time satellite tracking visualization using public NORAD data feeds.',
+    tech: ['TypeScript', 'Three.js', 'WebSocket'],
+    x: 75,
+    y: 25,
+    magnitude: 1.8,
+    connections: ['p2', 'p5'],
+  },
+  {
+    id: 'p4',
+    title: 'Void Protocol',
+    description:
+      'Zero-knowledge proof authentication system for distributed networks.',
+    tech: ['Cryptography', 'Go', 'Redis'],
+    x: 30,
+    y: 70,
+    magnitude: 1.1,
+    connections: ['p1', 'p5'],
+  },
+  {
+    id: 'p5',
+    title: 'Aurora Analytics',
+    description:
+      'Predictive modeling for atmospheric phenomena using machine learning.',
+    tech: ['Python', 'TensorFlow', 'D3.js'],
+    x: 65,
+    y: 65,
+    magnitude: 1.6,
+    connections: ['p3', 'p4'],
+  },
+];
+```
+
+## Layout tips
+
+- Keep `x` and `y` values between `5` and `90` to prevent nodes from clipping at the edges.
+- Nodes with higher `magnitude` values draw more visual attention — use them for flagship projects.
+- Avoid placing two nodes closer than ~10% on both axes, as their tooltips will overlap.
+- Connections are drawn as dashed `rgba(45, 212, 191, 0.2)` lines — fewer connections keep the chart readable.

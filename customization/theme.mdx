@@ -1,0 +1,123 @@
+---
+title: "Customize Observatory's Visual Theme and Colors"
+sidebarTitle: "Theme"
+description: "Change Observatory's Tailwind color tokens, swap accent colors, update typography, and adjust the deep-space background to match your brand."
+---
+
+Observatory's visual identity is built entirely on Tailwind CSS custom tokens. Every color, typeface, and background shade is defined in `tailwind.config.js` and compiled into `assets/main.css` at build time. This page covers how those tokens are structured and how to change them to make the theme your own.
+
+## Color palette
+
+Observatory uses two groups of custom tokens: `aurora` colors for highlights, glows, and interactive states, and `space` colors for the deep-space backgrounds and borders.
+
+### Aurora accent colors
+
+| Token | Hex | Usage |
+|---|---|---|
+| `aurora-turquoise` | `#2dd4bf` | Primary accent — active nav indicator, star glows, primary highlights |
+| `aurora-teal` | `#14b8a6` | Secondary accent — tag borders, hover states, spectrum bar gradients |
+| `aurora-seafoam` | `#5eead4` | Tertiary accent — hover text, selected star color, text selection highlight |
+| `aurora-violet` | `#8b5cf6` | Gradient endpoint — systems skill bars, orbital path accent |
+| `aurora-magenta` | `#d946ef` | Gradient endpoint — design skill bars, ribbon tail |
+
+### Space background colors
+
+| Token | Hex | Usage |
+|---|---|---|
+| `space-900` | `#03050d` | Darkest layer — constellation canvas, case study reader panel |
+| `space-800` | `#050816` | Body background and primary card/panel background |
+| `space-700` | `#0a1029` | Subtle borders and gradient start points |
+
+## Changing accent colors
+
+The primary accent throughout Observatory is `aurora-turquoise` (`#2dd4bf`). It drives the active navigation indicator (the animated underline that slides between links), star glow effects in the constellation map, the radio dial needle, and highlight text states across all pages.
+
+To change the accent palette, update the `theme.extend.colors` block in `tailwind.config.js`:
+
+```js tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        // Replace these with your own palette
+        'aurora-turquoise': '#2dd4bf',  // primary accent
+        'aurora-teal':      '#14b8a6',  // secondary accent
+        'aurora-seafoam':   '#5eead4',  // tertiary / hover
+        'aurora-violet':    '#8b5cf6',  // gradient endpoint
+        'aurora-magenta':   '#d946ef',  // gradient endpoint
+        'space-900': '#03050d',
+        'space-800': '#050816',
+        'space-700': '#0a1029',
+      }
+    }
+  }
+}
+```
+
+After updating the config, references to `aurora-turquoise` and friends in the component files will automatically pick up your new values the next time you build — you do not need to find-and-replace inside individual component files unless you are adding a completely new token name.
+
+<Note>
+  All Tailwind tokens are compiled at build time. After changing the config, run `npm run build` to regenerate the CSS.
+</Note>
+
+## Typography
+
+Observatory uses three distinct font roles, each loaded from Google Fonts via an `@import` statement at the top of `main.css`:
+
+```css main.css
+@import "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap";
+```
+
+The three roles map to Tailwind utility classes used throughout the component files:
+
+| Tailwind class | Family | Role |
+|---|---|---|
+| `font-display` | Space Grotesk | Page titles, section headings, card titles |
+| `font-mono` | JetBrains Mono | Labels, section tags, nav items, monospace UI text, code |
+| `font-sans` | Inter | Body text, descriptions, testimonials |
+
+### Swapping fonts
+
+To use different typefaces:
+
+1. Replace the Google Fonts `@import` URL in `main.css` with the families you want.
+2. Update the `fontFamily` block in `tailwind.config.js` to match:
+
+```js tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['Your Heading Font', 'sans-serif'],
+        mono:    ['Your Mono Font', 'monospace'],
+        sans:    ['Your Body Font', 'sans-serif'],
+      }
+    }
+  }
+}
+```
+
+The class names (`font-display`, `font-mono`, `font-sans`) are used widely across component files, so changing the config is all that is needed — no per-component edits required.
+
+## Background
+
+The deep-space background color is set on the `body` element in `main.css`:
+
+```css main.css
+body {
+  background-color: rgb(5 8 22); /* space-800 — #050816 */
+}
+```
+
+Two animated components layer effects on top of this base:
+
+- **Starfield** — procedurally placed, subtly twinkling star particles rendered as an SVG canvas
+- **AuroraRibbon** — the shimmering gradient band that sweeps across the top of the page
+
+Both components inherit the aurora color tokens for their gradients. If you change `aurora-turquoise` or `aurora-violet`, the ribbon and glow effects will update automatically after a rebuild.
+
+To make the background lighter or darker, update both the `body` CSS rule and the corresponding `space-800` token in `tailwind.config.js` to keep panel and card backgrounds consistent.
+
+<Note>
+  All Tailwind tokens are compiled at build time. After changing the config, run `npm run build` to regenerate the CSS.
+</Note>

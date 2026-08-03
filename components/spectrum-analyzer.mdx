@@ -1,0 +1,106 @@
+---
+title: "Spectrum Analyzer: Skills as Radio Frequencies"
+sidebarTitle: "Spectrum Analyzer"
+description: "Visualizes skills as animated vertical bars in a spectrum analyzer metaphor. Bars grow from zero to their proficiency level on mount and breathe with a looping opacity pulse."
+---
+
+`SpectrumAnalyzer` transforms a skills array into an animated bar chart styled as a radio-frequency spectrum analyzer. Each skill becomes a vertical bar whose height represents proficiency level (0–100, expressed as a Hz metaphor). A category color legend at the bottom maps bar colors to technical domains.
+
+## Visual appearance
+
+The component renders a full-width container with a `space-900/40` background, a subtle `white/5` border, `backdrop-blur-sm`, and interior padding. The chart area is 256px tall (`h-64`) with a bottom border acting as the baseline.
+
+Five dashed horizontal reference lines at 100%, 75%, 50%, 25%, and 0% are drawn at 10% opacity as a grid. Each skill bar is a gradient rectangle that fills from zero to the skill's `level` percentage. Bars are spaced with `gap-2 md:gap-4` and capped at 40px maximum width.
+
+Skill name labels are rendered below the chart, rotated 45° clockwise via CSS `transform`, in a muted monospace font.
+
+## Hover tooltip
+
+Hovering a bar reveals a floating tooltip above it (positioned with `absolute -top-12`). The tooltip displays:
+- **Skill name** in white
+- **Proficiency level** formatted as `{level}Hz` in `aurora-teal`
+
+The tooltip fades in/out via CSS `transition-opacity`.
+
+## Category colors
+
+Each bar uses a Tailwind `bg-gradient-to-t` from its category's color pair:
+
+| Category | Gradient | Example skills |
+|---|---|---|
+| `frontend` | `from-aurora-turquoise to-aurora-teal` | React, TypeScript, Tailwind, GraphQL |
+| `backend` | `from-aurora-teal to-blue-500` | Node.js, Go, PostgreSQL |
+| `systems` | `from-blue-500 to-aurora-violet` | Rust, Docker, Kubernetes, AWS |
+| `design` | `from-aurora-violet to-aurora-magenta` | Figma |
+
+A color legend row at the bottom of the card shows all four categories as small gradient dots with uppercase monospace labels.
+
+## Animations
+
+| Effect | Implementation |
+|---|---|
+| Bar grow-in | `m.div` with `initial: height(0)` → `animate: height(level%)`, `1.5s easeOut`, staggered by `index × 0.1s` |
+| Breathing pulse | Child `m.div` inside each bar with `animate: opacity([0.3, 0.7, 0.3])`, `repeat: Infinity`, duration `2–4s random` |
+
+The breathing overlay is a `bg-white/20 mix-blend-overlay` layer that covers each bar, making it shimmer organically even after the initial grow-in animation completes.
+
+## Where it's used
+
+`SpectrumAnalyzer` is the sole interactive element on the `/skills` route:
+
+```jsx
+// Skills page — assets/main.js
+function SkillsPage() {
+  return (
+    <div className="max-w-5xl mx-auto w-full">
+      {/* page header */}
+      <SpectrumAnalyzer />
+    </div>
+  );
+}
+```
+
+## Data shape
+
+The skills array is defined in `components/aurora/SpectrumAnalyzer.js`. Each entry represents one bar in the chart.
+
+<ParamField body="name" type="string" required>
+  The skill name displayed as a rotated label below the chart and in the hover tooltip.
+</ParamField>
+
+<ParamField body="level" type="number" required>
+  Proficiency level from `0` to `100`. This directly sets the bar's height as a percentage of the chart container. Displayed in the tooltip as `{level}Hz`.
+</ParamField>
+
+<ParamField body="category" type="'frontend' | 'backend' | 'systems' | 'design'" required>
+  Determines the gradient color applied to the bar. Must be one of the four defined category keys.
+</ParamField>
+
+## How to customize
+
+Edit the `skills` array at the top of the component file. Order in the array determines left-to-right bar order in the chart.
+
+```js
+// components/aurora/SpectrumAnalyzer.js
+
+const skills = [
+  { name: 'React',      level: 95, category: 'frontend' },
+  { name: 'TypeScript', level: 90, category: 'frontend' },
+  { name: 'Node.js',    level: 85, category: 'backend'  },
+  { name: 'Rust',       level: 70, category: 'systems'  },
+  { name: 'Go',         level: 75, category: 'backend'  },
+  { name: 'PostgreSQL', level: 80, category: 'backend'  },
+  { name: 'Docker',     level: 85, category: 'systems'  },
+  { name: 'Kubernetes', level: 65, category: 'systems'  },
+  { name: 'Figma',      level: 80, category: 'design'   },
+  { name: 'Tailwind',   level: 95, category: 'frontend' },
+  { name: 'GraphQL',    level: 75, category: 'frontend' },
+  { name: 'AWS',        level: 70, category: 'systems'  },
+];
+```
+
+## Layout tips
+
+- The chart renders all skills side by side. With 12 skills the bars are narrow — if you add more, consider reducing the `gap` or limiting to 10 entries for readability.
+- Skills with `level: 100` will fill the full chart height; keep most entries below 90 for a more natural spectrum appearance.
+- Group skills within a category together to keep color blocks visually coherent.

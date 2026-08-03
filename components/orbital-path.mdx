@@ -1,0 +1,161 @@
+---
+title: "Orbital Path: Work History on an Elliptical Orbit"
+sidebarTitle: "Orbital Path"
+description: "Maps work history as clickable nodes on an SVG elliptical orbit. Selecting a node animates a detail panel into view with role, company, period, and description."
+---
+
+`OrbitalPath` visualizes a career timeline as a series of nodes arranged on an elliptical orbit. Each role in the work history array is placed at a specific angular position on the orbit, and clicking a node updates the detail panel on the right side of the layout with that role's information.
+
+## Visual appearance
+
+The component renders a two-column layout. The left two-thirds contains the SVG orbit diagram; the right one-third contains the detail panel. On small screens the layout stacks vertically.
+
+The SVG orbit uses a `viewBox` of `0 0 800 400` and renders an ellipse centered at `cx=400, cy=200` with `rx=350, ry=150`. A ghost ellipse (very low-opacity dashed white) sits behind the animated one.
+
+The primary ellipse is animated using a Framer Motion `m.ellipse` with `pathLength` animating from `0` to `1` over `2s easeInOut` on mount. It is filled with a horizontal `linearGradient` that fades from transparent teal at both ends to `rgba(45, 212, 191, 0.5)` at the midpoint — creating a glowing orbital arc.
+
+An "ORIGIN" dot (`r=4`, white, 50% opacity) and label mark the center of the ellipse.
+
+## Node positioning
+
+Each role's position on the ellipse is computed from its `angle` (degrees) using standard trigonometry:
+
+```
+x = cx + rx * cos(angle * π/180)
+y = cy + ry * sin(angle * π/180)
+```
+
+For an orbit with `cx=400, cy=200, rx=350, ry=150`, an `angle` of `0°` places the node at the rightmost point `(750, 200)`, `90°` at the bottom `(400, 350)`, `180°` at the left `(50, 200)`, and `270°` at the top `(400, 50)`.
+
+## Active state
+
+When a node is selected:
+- The node circle expands from `r=6` to `r=8` (white fill, with a colored drop-shadow glow)
+- A larger transparent halo circle (`r=24`) appears around it
+- A dashed line animates from the center origin to the node using `m.line` with `opacity` from `0` to `1`
+- The node's `period` year label stays visible at `y + 35`
+
+Non-active nodes display their start year at `y + 25` in muted slate.
+
+## Detail panel
+
+The right panel is wrapped in `AnimatePresence mode="wait"`. The active role is keyed to `role.id`, so switching nodes triggers an exit animation on the current panel and an entry animation on the new one.
+
+The panel slides in from `x: 20` to `x: 0` with `opacity: 0 → 1` over `0.3s`. It contains:
+- A 4px left border in the role's accent `color`
+- The `period` in the role's accent color (monospace)
+- The `title` as a large display heading
+- `@ company` in slate
+- The `description` paragraph
+
+## Animations
+
+| Effect | Implementation |
+|---|---|
+| Orbit draw | `m.ellipse` `pathLength: 0 → 1`, `2s easeInOut` |
+| Node entry | Not animated (rendered via SVG `<circle>`) |
+| Active line | `m.line` `opacity: 0 → 1` |
+| Panel transition | `m.div` `opacity/x` enter + exit, `AnimatePresence mode="wait"`, `0.3s` |
+
+## Where it's used
+
+`OrbitalPath` is the sole interactive element on the `/work` route:
+
+```jsx
+// Work page — assets/main.js
+function WorkPage() {
+  return (
+    <div className="max-w-6xl mx-auto w-full">
+      {/* page header */}
+      <OrbitalPath />
+    </div>
+  );
+}
+```
+
+## Data shape
+
+The roles array is defined in `components/aurora/OrbitalPath.js`. Each entry represents one node on the orbit.
+
+<ParamField body="id" type="string" required>
+  Unique identifier. Used as the React key and as the `AnimatePresence` key to trigger panel transitions.
+</ParamField>
+
+<ParamField body="company" type="string" required>
+  Company or organization name. Displayed as `@ {company}` in the detail panel.
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Job title or role name. Displayed as the main heading in the detail panel.
+</ParamField>
+
+<ParamField body="period" type="string" required>
+  Employment period string, e.g. `'2022 - Present'` or `'2019 - 2022'`. The start year is extracted and shown as a label near the node on the orbit diagram.
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  One to three sentence summary of responsibilities and achievements shown in the detail panel.
+</ParamField>
+
+<ParamField body="angle" type="number" required>
+  Angular position on the ellipse in degrees (`0`–`360`). `0°` = rightmost point, increasing clockwise. Space roles evenly around the orbit (e.g., 30°, 90°, 150°, 210°) to avoid overlap.
+</ParamField>
+
+<ParamField body="color" type="string" required>
+  Hex accent color for the node and detail panel border. Each role should have a distinct color from the aurora palette. Example: `'#2dd4bf'`.
+</ParamField>
+
+## How to customize
+
+```js
+// components/aurora/OrbitalPath.js
+
+const roles = [
+  {
+    id: 'r1',
+    company: 'Nova Systems',
+    title: 'Senior Systems Engineer',
+    period: '2022 - Present',
+    description:
+      'Architecting distributed microservices for high-throughput telemetry data processing. Reduced latency by 40%.',
+    angle: 30,
+    color: '#2dd4bf',
+  },
+  {
+    id: 'r2',
+    company: 'Starlight Dynamics',
+    title: 'Frontend Architect',
+    period: '2019 - 2022',
+    description:
+      'Led a team of 6 to rebuild the core visualization dashboard. Implemented complex WebGL rendering pipelines.',
+    angle: 90,
+    color: '#14b8a6',
+  },
+  {
+    id: 'r3',
+    company: 'AeroTech',
+    title: 'Full Stack Developer',
+    period: '2016 - 2019',
+    description:
+      'Developed internal tools for flight path analysis. Migrated legacy monolith to containerized services.',
+    angle: 150,
+    color: '#5eead4',
+  },
+  {
+    id: 'r4',
+    company: 'Orbital Inc',
+    title: 'Junior Developer',
+    period: '2014 - 2016',
+    description:
+      'Maintained legacy PHP systems and slowly introduced React to the frontend stack.',
+    angle: 210,
+    color: '#8b5cf6',
+  },
+];
+```
+
+## Layout tips
+
+- Space angles at least 50–60° apart to prevent node labels from overlapping.
+- Distribute roles across both the upper and lower halves of the ellipse to fill the orbit.
+- The first entry in the array is selected as the default active node on mount.

@@ -1,0 +1,173 @@
+---
+title: "Star Map Index: Articles as Stellar Coordinates"
+sidebarTitle: "Star Map"
+description: "Plots articles as stars on an astronomical coordinate grid. Star size encodes article magnitude (depth/importance). Hovering a star reveals a floating tooltip with title, topic, and coordinates."
+---
+
+`StarMapIndex` renders an article index as an astronomical star chart. Each article is a glowing dot placed at an `(x, y)` percentage coordinate on a grid-lined canvas. The grid carries α (ascension) and δ (declination) axis labels to reinforce the star-chart metaphor. Hovering a star reveals a floating card with the article's title, topic tag, magnitude reading, and exact coordinates.
+
+## Visual appearance
+
+The component renders a `600px` tall container with a `space-900/40` background, a `white/10` border, and `overflow: hidden`. A CSS grid overlay at 10% opacity provides the coordinate grid background:
+
+```css
+background-image: linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px);
+background-size: 50px 50px;
+```
+
+Axis labels sit in the corners:
+- `ASCENSION (α)` — bottom right, horizontal
+- `DECLINATION (δ)` — top left, rotated 90° (vertical)
+
+Each star is an absolutely positioned div, centered with `transform: translate(-50%, -50%)`. It contains:
+- A blurred glow halo (2×3× the star size via `filter: blur(4px)`) that becomes visible on hover
+- A solid dot in white (resting) or `aurora-turquoise` (hovered), sized at `4 + magnitude × 2.5` pixels
+
+## Star sizing
+
+| Magnitude | Dot diameter |
+|---|---|
+| 1 | 6.5 px |
+| 2 | 9.0 px |
+| 3 | 11.5 px |
+| 4 | 14.0 px |
+| 5 | 16.5 px |
+
+Higher magnitude articles are more prominent — use magnitude to encode article depth, importance, or reading time.
+
+## Hover tooltip
+
+Hovering a star sets it as the active article, triggering an `AnimatePresence` swap. The tooltip card enters from `y: 20` with `opacity: 0` and rests at `y: 0`, `opacity: 1`. It is positioned at `bottom-8 left-8` and grows to `w-96` on medium screens.
+
+The card displays:
+- **Topic tag** — a small `aurora-teal` monospace pill (top left)
+- **Magnitude** — `MAG: {magnitude}.0` in slate monospace (top right)
+- **Title** — large display font heading
+- **Coordinates** — `Coordinates: {x.toFixed(1)}α, {y.toFixed(1)}δ` in monospace
+
+A default hint message (`"Hover over a celestial body to read the entry…"`) is shown with `AnimatePresence` when no star is active.
+
+## Animations
+
+| Effect | Implementation |
+|---|---|
+| Star entry | `m.button` spring animation `scale(0), opacity(0)` → `scale(1), opacity(1)`, `1s` |
+| Glow on hover | CSS `transition-all duration-300` on `opacity` and `scale` of the blur halo |
+| Tooltip enter/exit | `m.div` `opacity + y(20)`, `AnimatePresence` |
+
+## Where it's used
+
+`StarMapIndex` is the sole interactive element on the `/articles` route:
+
+```jsx
+// Articles page — assets/main.js
+function ArticlesPage() {
+  return (
+    <div className="max-w-6xl mx-auto w-full">
+      {/* page header */}
+      <StarMapIndex />
+    </div>
+  );
+}
+```
+
+## Data shape
+
+The articles array is defined in `components/aurora/StarMapIndex.js`. Each entry corresponds to one star on the map.
+
+<ParamField body="id" type="string" required>
+  Unique identifier for the article. Used as the React key.
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Full article title displayed as the heading in the hover tooltip card.
+</ParamField>
+
+<ParamField body="topic" type="string" required>
+  Category or tag label shown as a pill badge in the tooltip. Examples: `'Language'`, `'Performance'`, `'Design'`, `'Architecture'`, `'Backend'`, `'Tooling'`.
+</ParamField>
+
+<ParamField body="magnitude" type="number" required>
+  Integer from `1` to `5`. Controls the rendered star size (`4 + magnitude × 2.5` px diameter). Use higher magnitudes for longer, more important, or more recent articles.
+</ParamField>
+
+<ParamField body="x" type="number" required>
+  Horizontal position as a percentage of the container width (`0`–`100`). Maps to `left: x%`.
+</ParamField>
+
+<ParamField body="y" type="number" required>
+  Vertical position as a percentage of the container height (`0`–`100`). Maps to `top: y%`.
+</ParamField>
+
+## How to customize
+
+```js
+// components/aurora/StarMapIndex.js
+
+const articles = [
+  {
+    id: 'a1',
+    title: 'The Void of Undefined: TypeScript Edge Cases',
+    topic: 'Language',
+    magnitude: 3,
+    x: 20,
+    y: 30,
+  },
+  {
+    id: 'a2',
+    title: 'Rendering the Cosmos: WebGL Optimization',
+    topic: 'Performance',
+    magnitude: 5,
+    x: 50,
+    y: 20,
+  },
+  {
+    id: 'a3',
+    title: 'Quiet Interfaces: Designing for High Cognitive Load',
+    topic: 'Design',
+    magnitude: 4,
+    x: 75,
+    y: 40,
+  },
+  {
+    id: 'a4',
+    title: 'State Management in Zero Gravity',
+    topic: 'Architecture',
+    magnitude: 4,
+    x: 35,
+    y: 65,
+  },
+  {
+    id: 'a5',
+    title: 'Micro-interactions: The Dust of the UI',
+    topic: 'Design',
+    magnitude: 2,
+    x: 60,
+    y: 75,
+  },
+  {
+    id: 'a6',
+    title: 'Parsing 10GB JSON without Crashing',
+    topic: 'Backend',
+    magnitude: 3,
+    x: 85,
+    y: 80,
+  },
+  {
+    id: 'a7',
+    title: 'Why I Still Use Makefiles',
+    topic: 'Tooling',
+    magnitude: 1,
+    x: 10,
+    y: 80,
+  },
+];
+```
+
+## Layout tips
+
+- Keep `x` and `y` between `5` and `92` to prevent stars from clipping the container edge.
+- Avoid placing two stars closer than ~8% on both axes — they will appear to merge and their tooltips will overlap.
+- Scatter magnitudes across the range to create a natural-looking star density variation.
+- The tooltip card is anchored to the bottom-left — for stars in the lower-left quadrant, consider adjusting the tooltip position in the source to avoid the card clipping off-screen.

@@ -1,0 +1,136 @@
+---
+title: "Projects Page — Logged Sightings Constellation Map"
+sidebarTitle: "Projects"
+description: "The Projects page uses ConstellationLayout to display portfolio projects as interactive star nodes connected by constellation lines on a dark canvas."
+---
+
+# Projects Page
+
+The **Projects** page (`/projects`) is accessed via the navigation label **"Logged Sightings"**. It uses the `ConstellationLayout` component to render each project as a glowing star node on an interactive star-map canvas. Nodes are connected by thin constellation lines according to a `connections` adjacency list, and clicking a node expands a detail card.
+
+## ConstellationLayout Component
+
+`ConstellationLayout` (`components/aurora/ConstellationLayout.js`) accepts a single `projects` prop — an array of project objects — and renders them onto an SVG/canvas layer. Key behaviours:
+
+- **Star nodes** are sized proportionally to the `magnitude` field.
+- **Constellation lines** are drawn between any two nodes whose IDs appear in each other's `connections` array.
+- **Coordinate system** uses `x` and `y` as percentage values of the container dimensions (0–100), so layout is fully responsive.
+- **Hover state** brightens the node glow and shows the project title.
+- **Click state** opens an overlay card with the full description and tech stack.
+
+## Coordinate System
+
+```
+(0,0) ──────────── (100,0)
+  │                    │
+  │   x = % width      │
+  │   y = % height     │
+  │                    │
+(0,100) ──────────(100,100)
+```
+
+A node at `{ x: 20, y: 30 }` sits 20% from the left edge and 30% from the top of the container.
+
+## Project Data
+
+The full project array used by the page:
+
+```js
+// components/aurora/ConstellationLayout.js
+const projects = [
+  {
+    id: 'p1',
+    title: 'Stellaris Engine',
+    description: 'A high-performance rendering engine for vast data sets, built with WebGL and Rust.',
+    tech: ['WebGL', 'Rust', 'WASM'],
+    x: 20, y: 30,
+    magnitude: 1.5,
+    connections: ['p2', 'p4'],
+  },
+  {
+    id: 'p2',
+    title: 'Nebula UI',
+    description: 'Component library designed for deep-space telemetry applications. High contrast, low noise.',
+    tech: ['React', 'Tailwind', 'Framer'],
+    x: 45, y: 15,
+    magnitude: 1.2,
+    connections: ['p1', 'p3'],
+  },
+  {
+    id: 'p3',
+    title: 'Orbit Tracker',
+    description: 'Real-time satellite tracking visualization using public NORAD data feeds.',
+    tech: ['TypeScript', 'Three.js', 'WebSocket'],
+    x: 75, y: 25,
+    magnitude: 1.8,
+    connections: ['p2', 'p5'],
+  },
+  {
+    id: 'p4',
+    title: 'Void Protocol',
+    description: 'Zero-knowledge proof authentication system for distributed networks.',
+    tech: ['Cryptography', 'Go', 'Redis'],
+    x: 30, y: 70,
+    magnitude: 1.1,
+    connections: ['p1', 'p5'],
+  },
+  {
+    id: 'p5',
+    title: 'Aurora Analytics',
+    description: 'Predictive modeling for atmospheric phenomena using machine learning.',
+    tech: ['Python', 'TensorFlow', 'D3.js'],
+    x: 65, y: 65,
+    magnitude: 1.6,
+    connections: ['p3', 'p4'],
+  },
+];
+```
+
+## Data Shape Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | Unique identifier (e.g. `'p1'`). Used as the key in the `connections` adjacency list. |
+| `title` | `string` | Project name displayed on hover and in the detail card. |
+| `description` | `string` | Short description shown in the expanded detail panel. |
+| `tech` | `string[]` | Technology tags rendered as pill badges in the detail card. |
+| `x` | `number` | Horizontal position as a percentage of the container width (0–100). |
+| `y` | `number` | Vertical position as a percentage of the container height (0–100). |
+| `magnitude` | `number` | Controls the rendered star radius. Higher = larger, brighter node. Typical range: 1.0–2.0. |
+| `connections` | `string[]` | Array of other project `id` values. A line is drawn between each connected pair. |
+
+## Constellation Connections
+
+The connections between the five demo projects form two overlapping triangles:
+
+```
+p1 (Stellaris) ──── p2 (Nebula UI) ──── p3 (Orbit Tracker)
+  │                                           │
+  └──── p4 (Void Protocol) ────────── p5 (Aurora Analytics)
+              └──────────────────────────────┘
+```
+
+<Note>
+  Connections are undirected. If `p1.connections` includes `'p2'`, you do **not** need to add `'p1'` to `p2.connections` — the component checks both arrays when drawing lines.
+</Note>
+
+## Adding a New Project
+
+<Steps>
+  <Step title="Open ConstellationLayout.js">
+    The data array is near the top of `components/aurora/ConstellationLayout.js`.
+  </Step>
+  <Step title="Append a new object">
+    Add a new entry to the array with a unique `id`, coordinates, and optionally list existing IDs in `connections` to link it to neighbours.
+  </Step>
+  <Step title="Choose coordinates thoughtfully">
+    Avoid placing nodes too close together (within ~10 units) to prevent label overlap on smaller viewports.
+  </Step>
+  <Step title="Set magnitude">
+    Use `1.0`–`1.3` for minor projects and `1.6`–`2.0` for flagship work. This visually communicates relative importance the same way star brightness does in astronomy.
+  </Step>
+</Steps>
+
+<Tip>
+  Sketch your constellation layout on paper first. The best constellations have a clear visual shape — avoid random scatter. Think of it as deliberate information design.
+</Tip>

@@ -1,0 +1,120 @@
+---
+title: "Testimonials Page — Peer Reports Polaroid Cards"
+sidebarTitle: "Testimonials"
+description: "The Testimonials page uses PolaroidTestimonials to show endorsements as animated polaroid cards with individual CSS rotations and imageHue photo gradients."
+---
+
+# Testimonials Page
+
+The **Testimonials** page (`/testimonials`) is reached via the navigation label **"Peer Reports"**. It uses the `PolaroidTestimonials` component to present professional endorsements as a scattered arrangement of polaroid-style cards. Each card has a slight rotation, a coloured photo placeholder gradient, and handwritten-style attribution text beneath the quote.
+
+## PolaroidTestimonials Component
+
+`PolaroidTestimonials` (`components/aurora/PolaroidTestimonials.js`) renders testimonials as interactive polaroid cards. Key behaviours:
+
+- Cards are initially scattered across the viewport with individual `rotation` values applied via CSS `transform: rotate()`.
+- On hover, a card lifts (scale + shadow) and rotates back to `0°` for easier reading.
+- The photo area at the top of each polaroid is a placeholder gradient generated from the `imageHue` value — a CSS `hue-rotate` degree that shifts a base teal gradient to a unique tint per card.
+- Quote text is displayed in a serif or handwriting font beneath the photo area, with author and role in a smaller monospace style.
+
+## imageHue Field
+
+`imageHue` is a CSS hue rotation value (in degrees, 0–360) applied to the base placeholder gradient:
+
+```css
+/* Base gradient (hue: 0°) */
+background: linear-gradient(135deg, #2dd4bf, #0f172a);
+
+/* With imageHue: 120 applied */
+filter: hue-rotate(120deg);
+/* Result: shifts towards green/lime tones */
+```
+
+This gives each polaroid a distinct photo placeholder colour without requiring a real image file.
+
+## Testimonials Data
+
+```js
+// components/aurora/PolaroidTestimonials.js
+const testimonials = [
+  {
+    id: 't1',
+    author: 'Dr. E. Vance',
+    role: 'Lead Architect @ Nova Systems',
+    text: "Brought order to our chaotic frontend architecture. Their ability to see the entire system while sweating the micro-interactions is rare.",
+    rotation: -3,   // degrees — slight counter-clockwise tilt
+    x: 20,          // % from left
+    y: 30,          // % from top
+    imageHue: 180,  // teal-blue placeholder
+  },
+  {
+    id: 't2',
+    author: 'S. Chen',
+    role: 'Product Manager',
+    text: "Communicates complex technical constraints with absolute clarity. Never says \"it's impossible\", only \"here are the physics of that request\".",
+    rotation: 2,
+    x: 50,
+    y: 20,
+    imageHue: 270,  // violet placeholder
+  },
+  {
+    id: 't3',
+    author: 'M. Rodriguez',
+    role: 'Senior Developer',
+    text: "The cleanest code I've ever inherited. Every module felt like a well-calibrated instrument.",
+    rotation: -1,
+    x: 75,
+    y: 35,
+    imageHue: 60,   // warm yellow-green placeholder
+  },
+];
+```
+
+<Note>
+  The `rotation`, `x`, `y`, and `imageHue` fields shown above are representative values. The source component generates or infers these for the demo data — check `PolaroidTestimonials.js` for the exact defaults and adjust them to suit your layout.
+</Note>
+
+## Testimonial Quotes
+
+<CardGroup cols={1}>
+  <Card title="Dr. E. Vance — Lead Architect @ Nova Systems">
+    "Brought order to our chaotic frontend architecture. Their ability to see the entire system while sweating the micro-interactions is rare."
+  </Card>
+  <Card title="S. Chen — Product Manager">
+    "Communicates complex technical constraints with absolute clarity. Never says 'it's impossible', only 'here are the physics of that request'."
+  </Card>
+  <Card title="M. Rodriguez — Senior Developer">
+    "The cleanest code I've ever inherited. Every module felt like a well-calibrated instrument."
+  </Card>
+</CardGroup>
+
+## Data Shape Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | Unique identifier (e.g. `'t1'`). |
+| `author` | `string` | Reviewer's name, displayed beneath the quote in small caps. |
+| `role` | `string` | Job title and company of the reviewer. |
+| `text` | `string` | The testimonial quote body. No need to add quotation marks — the component wraps the text in styled quote characters. |
+| `rotation` | `number` | CSS rotation in degrees applied to the polaroid card. Negative = counter-clockwise. Typical range: -5 to +5. |
+| `x` | `number` | Horizontal position of the card as a percentage of the container width. |
+| `y` | `number` | Vertical position of the card as a percentage of the container height. |
+| `imageHue` | `number` | CSS `hue-rotate` value (0–360°) applied to the placeholder photo gradient at the top of the polaroid. |
+
+## Adding a Testimonial
+
+<Steps>
+  <Step title="Open PolaroidTestimonials.js">
+    The testimonials array is at the top of `components/aurora/PolaroidTestimonials.js`.
+  </Step>
+  <Step title="Append a new object">
+    Add a new entry with `id`, `author`, `role`, and `text`. Optionally set `rotation`, `x`, `y`, and `imageHue`.
+  </Step>
+  <Step title="Adjust layout positions">
+    If you have four or more cards, redistribute the `x`/`y` values so cards don't overlap. A simple grid pattern (e.g. three columns at `x: 15, 45, 75`) works well as a starting point.
+  </Step>
+</Steps>
+
+<Tip>
+  Keep `rotation` values small (±1° to ±4°). Larger rotations can make text harder to read before hover and reduce the sense of authenticity that makes the polaroid metaphor convincing.
+</Tip>

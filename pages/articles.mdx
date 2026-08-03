@@ -1,0 +1,126 @@
+---
+title: "Articles Page — Notebook Star Map of Writing"
+sidebarTitle: "Articles"
+description: "The Articles page uses StarMapIndex to plot each article as a star on a coordinate map, with magnitude indicating depth and topic used as a tag label."
+---
+
+# Articles Page
+
+The **Articles** page (`/articles`) is reached via the navigation label **"Notebook"**. It renders the `StarMapIndex` component, which plots every article as a named star on a coordinate-mapped field. The visual weight of each star corresponds to the article's depth, and hovering a star reveals its title and topic tag.
+
+## StarMapIndex Component
+
+`StarMapIndex` (`components/aurora/StarMapIndex.js`) renders a dark sky canvas with labelled star points. Key behaviours:
+
+- Each star's **visual size** scales with the `magnitude` field — higher magnitude means a larger, brighter dot.
+- Stars are positioned using `x` and `y` percentage coordinates within the container.
+- Hovering a star displays the article title and topic in a floating tooltip.
+- Topic strings are rendered as pill-shaped tag labels beside the tooltip.
+- Clicking a star is intended to navigate to the article URL (link destination to be configured per article).
+
+## Magnitude Scale
+
+The `magnitude` field is an integer from 1–5 representing article length and depth:
+
+| Magnitude | Meaning | Visual |
+|-----------|---------|--------|
+| 1 | Short note / quick tip | Tiny dim star |
+| 2 | Brief article | Small star |
+| 3 | Standard post | Medium star |
+| 4 | In-depth guide | Large bright star |
+| 5 | Long-form / series | Largest, most prominent star |
+
+## Articles Data
+
+```js
+// components/aurora/StarMapIndex.js
+const articles = [
+  {
+    id: 'a1',
+    title: 'The Void of Undefined: TypeScript Edge Cases',
+    topic: 'Language',
+    magnitude: 3,
+  },
+  {
+    id: 'a2',
+    title: 'Rendering the Cosmos: WebGL Optimization',
+    topic: 'Performance',
+    magnitude: 5,
+  },
+  {
+    id: 'a3',
+    title: 'Quiet Interfaces: Designing for High Cognitive Load',
+    topic: 'Design',
+    magnitude: 4,
+  },
+  {
+    id: 'a4',
+    title: 'State Management in Zero Gravity',
+    topic: 'Architecture',
+    magnitude: 4,
+  },
+  {
+    id: 'a5',
+    title: 'Micro-interactions: The Dust of the UI',
+    topic: 'Design',
+    magnitude: 2,
+  },
+  {
+    id: 'a6',
+    title: 'Parsing 10GB JSON without Crashing',
+    topic: 'Backend',
+    magnitude: 3,
+  },
+  {
+    id: 'a7',
+    title: 'Why I Still Use Makefiles',
+    topic: 'Tooling',
+    magnitude: 1,
+  },
+];
+```
+
+## Article Index
+
+| Title | Topic | Magnitude |
+|-------|-------|-----------|
+| The Void of Undefined: TypeScript Edge Cases | Language | ★★★☆☆ |
+| Rendering the Cosmos: WebGL Optimization | Performance | ★★★★★ |
+| Quiet Interfaces: Designing for High Cognitive Load | Design | ★★★★☆ |
+| State Management in Zero Gravity | Architecture | ★★★★☆ |
+| Micro-interactions: The Dust of the UI | Design | ★★☆☆☆ |
+| Parsing 10GB JSON without Crashing | Backend | ★★★☆☆ |
+| Why I Still Use Makefiles | Tooling | ★☆☆☆☆ |
+
+## Data Shape Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | Unique identifier (e.g. `'a1'`). |
+| `title` | `string` | Article title displayed in the hover tooltip and as the star label. |
+| `topic` | `string` | Category tag rendered as a pill label. Used for visual grouping — not programmatic filtering. |
+| `magnitude` | `number` | Integer 1–5. Controls the rendered star size. Higher = longer / more in-depth article. |
+| `x` | `number` | *(Optional)* Horizontal position as percentage of container width. If omitted, positions are auto-distributed. |
+| `y` | `number` | *(Optional)* Vertical position as percentage of container height. If omitted, positions are auto-distributed. |
+
+<Note>
+  The demo data does not include explicit `x` and `y` values. When these fields are absent, `StarMapIndex` assigns positions algorithmically to avoid overlap. Provide explicit coordinates only if you want precise constellation-style groupings.
+</Note>
+
+## Adding an Article
+
+<Steps>
+  <Step title="Open StarMapIndex.js">
+    The articles array is at the top of `components/aurora/StarMapIndex.js`.
+  </Step>
+  <Step title="Append a new entry">
+    Add an object with `id`, `title`, `topic`, and `magnitude`. Optionally specify `x` and `y` if you want a fixed position.
+  </Step>
+  <Step title="Add a link destination">
+    Add a `url` field to the object and update the click handler in `StarMapIndex.js` to route to `article.url`. This is the recommended way to connect stars to real external or internal article pages.
+  </Step>
+</Steps>
+
+<Tip>
+  Use `magnitude: 5` sparingly — it should signal your most substantial work. If every article is magnitude 4 or 5, the visual hierarchy collapses. Aim for a distribution resembling a real star field: a few bright objects, many medium ones, and several dim points.
+</Tip>

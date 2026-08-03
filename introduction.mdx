@@ -1,0 +1,142 @@
+---
+title: "Observatory: A Space-Themed Engineer Portfolio Template"
+sidebarTitle: "Introduction"
+description: "Observatory is a React SPA portfolio for systems engineers. Built on Vite, React Router, Framer Motion, and Tailwind with a deep-space aesthetic."
+---
+
+Observatory is a fully client-side React single-page application designed as a personal portfolio template for senior systems engineers. Every element of the UI — from the animated starfield background to the aurora gradient ribbon — is built around a consistent deep-space aesthetic. Rather than a generic portfolio, Observatory gives you a thematic system: nine distinct pages, each translated into a unique astronomy metaphor, powered by a custom component library called **Aurora**.
+
+<Note>
+  Observatory has no backend. All personal data — project entries, work history, skills, testimonials, articles — is hardcoded directly in the Aurora component source files. There is no CMS, no database, and no API.
+</Note>
+
+## Tech Stack
+
+Observatory is assembled from a focused set of modern frontend tools. Each was chosen for a specific purpose.
+
+| Layer | Technology | Role |
+|---|---|---|
+| **Framework** | [React 18](https://react.dev) | Component rendering and state |
+| **Build tool** | [Vite](https://vitejs.dev) | Dev server and production bundler |
+| **Routing** | [React Router v6](https://reactrouter.com) | Client-side SPA routing with nested routes |
+| **Animation** | [Framer Motion](https://www.framer.com/motion/) | Page transitions, entrance animations, layout IDs |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com) | Utility-first CSS, custom color tokens |
+| **Icons** | [Lucide React](https://lucide.dev) | Consistent icon set (Menu, X, ArrowRight, etc.) |
+
+Framer Motion is aliased internally as `proxy.js` — throughout the codebase you'll see `import { m as motion } from "../../assets/proxy.js"`. All animated components use `motion.div`, `motion.span`, etc., via this alias.
+
+## The Aurora Component System
+
+All custom UI lives under `components/aurora/`. This directory is the entire design system. Each file corresponds to either a layout primitive or a full page section. There are no external UI libraries; every interactive element — the radio dial, the orbital path timeline, the constellation project map — is purpose-built.
+
+Components in Aurora break into two categories:
+
+**Layout & ambient effects** — wrappers and background elements used on every page:
+- `Layout.js` — root page layout shell, renders Navigation, CursorTrail, PageTransition, and the content outlet
+- `Navigation.js` — fixed top navigation bar with scroll-aware opacity and Framer Motion spring indicator
+- `Starfield.js` — canvas-based animated star field rendered behind page content
+- `AuroraRibbon.js` — the sweeping gradient ribbon visible on the home page
+- `CursorTrail.js` — mouse-follow particle trail effect
+- `PageTransition.js` — fade/slide transitions between routes
+
+**Page section components** — the main content components, one per thematic page section:
+- `ConstellationLayout.js` — interactive SVG constellation map for Projects
+- `SpectrumAnalyzer.js` — animated frequency bars for Skills
+- `OrbitalPath.js` — horizontal timeline for Work history
+- `RadioDial.js` — interactive radio tuner for Contact
+- `CaseStudyReader.js` — long-form article reader for Case Studies
+- `StarMapIndex.js` — grid index of articles for the Notebook
+- `PolaroidTestimonials.js` — polaroid-style testimonial cards
+
+## Space Metaphor System
+
+Every page in Observatory has been renamed to fit the astronomy theme. The metaphor runs consistently from the URL labels shown in the navigation bar down to the page heading copy.
+
+| Route | Nav Label | Astronomy Metaphor | Component |
+|---|---|---|---|
+| `/` | Tonight's Forecast | Home / hero | *(inline in `main.js`)* |
+| `/about` | The Observer | Engineer biography | *(inline in `main.js`)* |
+| `/projects` | Logged Sightings | Projects as a constellation map | `ConstellationLayout` |
+| `/skills` | Instruments | Skills as a spectrum analyzer | `SpectrumAnalyzer` |
+| `/work` | Expeditions | Work history as orbital path | `OrbitalPath` |
+| `/case-studies` | Field Reports | Case studies as long-exposure logs | `CaseStudyReader` |
+| `/articles` | Notebook | Articles as stellar cartography index | `StarMapIndex` |
+| `/testimonials` | Peer Reports | Testimonials as peer telemetry | `PolaroidTestimonials` |
+| `/contact` | Send a Signal | Contact as a radio transmission dial | `RadioDial` |
+
+## The Nine Pages
+
+<CardGroup cols={3}>
+  <Card title="Tonight's Forecast" icon="house" href="pages/home">
+    The hero page. Features the animated Starfield, AuroraRibbon gradient, and a large typographic headline: *"Building systems at high altitude."*
+  </Card>
+  <Card title="The Observer" icon="user" href="pages/about">
+    Engineer biography. Splits into a two-column grid — an animated geometric avatar panel on the left, long-form bio text on the right.
+  </Card>
+  <Card title="Logged Sightings" icon="star" href="pages/projects">
+    Projects mapped as an interactive SVG constellation. Hover over a star node to reveal project telemetry data. Lines connect projects that share architectural patterns.
+  </Card>
+  <Card title="Instruments" icon="activity" href="pages/skills">
+    Skills rendered as an animated spectrum analyzer with frequency bars per domain — proficiency expressed as signal strength.
+  </Card>
+  <Card title="Expeditions" icon="briefcase" href="pages/work">
+    Work history laid out as a horizontal orbital path. Select a coordinate to expand mission logs and responsibilities.
+  </Card>
+  <Card title="Field Reports" icon="file-text" href="pages/case-studies">
+    Case studies in a long-exposure reader format — extended technical write-ups with a "content develops slowly" visual metaphor.
+  </Card>
+  <Card title="Notebook" icon="book-open" href="pages/articles">
+    Articles indexed as stellar cartography — a grid of entries mapped by topic and magnitude via `StarMapIndex`.
+  </Card>
+  <Card title="Peer Reports" icon="message-square" href="pages/testimonials">
+    Colleague testimonials displayed as polaroid photograph cards with slight rotation, via `PolaroidTestimonials`.
+  </Card>
+  <Card title="Send a Signal" icon="radio" href="pages/contact">
+    Contact page built around an interactive `RadioDial` component. The engineer is described as *"listening on all frequencies"* with a *"response time of typically 1 Earth rotation."*
+  </Card>
+</CardGroup>
+
+## Color Palette
+
+The Observatory color system is defined as custom Tailwind tokens. Every shade maps directly to a specific CSS color value found in `assets/main.css`:
+
+| Token | Hex | Usage |
+|---|---|---|
+| `aurora-turquoise` | `#2dd4bf` | Primary accent — active nav indicator, CTA borders, glow effects |
+| `aurora-teal` | `#14b8a6` | Section labels, icon accents, gradient start |
+| `aurora-seafoam` | `#5eead4` | Hover text states, gradient end, text selection highlight |
+| `aurora-violet` | `#8b5cf6` | Gradient accents, AuroraRibbon start color |
+| `aurora-magenta` | `#d946ef` | Gradient accents, AuroraRibbon end color |
+| `space-900` | `#03050d` | Deepest background, mobile nav overlay |
+| `space-800` | `#050816` | Default `<body>` background, card surfaces |
+
+Text selection across the entire site uses `background-color: #14b8a64d` (aurora-teal at 30% opacity) with `color: #5eead4` (aurora-seafoam), set globally in `main.css`.
+
+## Typography
+
+Observatory imports three typefaces from Google Fonts, each assigned a semantic role:
+
+```css
+@import "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600
+  &family=JetBrains+Mono:wght@400;500
+  &family=Space+Grotesk:wght@300;400;500;600;700
+  &display=swap";
+```
+
+| Family | Tailwind Class | Role |
+|---|---|---|
+| **Space Grotesk** | `font-display` | Headings, logotype, page titles |
+| **JetBrains Mono** | `font-mono` | Nav labels, section tags, code, UI metadata |
+| **Inter** | `font-sans` | Body copy, descriptions, paragraph text |
+
+## Animated Effects
+
+Four ambient effects layer on top of all page content. They are always present and managed by the `Layout` component:
+
+**Starfield** (`Starfield.js`) — A canvas element renders animated star particles that drift slowly across the deep-space background. It sits behind all content at `z-index: 0`.
+
+**AuroraRibbon** (`AuroraRibbon.js`) — A large animated gradient element (violet → magenta) composited with `mix-blend-mode: screen` to produce the aurora glow on the home page. Uses Framer Motion for looping gradient animation.
+
+**CursorTrail** (`CursorTrail.js`) — Tracks `mousemove` events and spawns small glowing particles that fade out behind the cursor. Adds tactile feedback to mouse interaction.
+
+**PageTransition** (`PageTransition.js`) — Wraps each routed page in a Framer Motion `AnimatePresence` sequence. Handles fade-in on mount and fade-out on unmount when navigating between routes.
