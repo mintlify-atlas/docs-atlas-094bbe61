@@ -21,7 +21,7 @@ The **Skills** page (`/skills`) is accessed via the navigation label **"Instrume
 
 The `level` field is an integer from 0–100. The component renders it next to the bar label as a frequency value:
 
-```
+```text
 level: 95  →  displayed as  95 Hz
 level: 70  →  displayed as  70 Hz
 ```
@@ -46,16 +46,16 @@ The full skills array used by the page:
 const skills = [
   { name: 'React',      level: 95, category: 'frontend' },
   { name: 'TypeScript', level: 90, category: 'frontend' },
-  { name: 'Tailwind',   level: 95, category: 'frontend' },
-  { name: 'GraphQL',    level: 75, category: 'frontend' },
   { name: 'Node.js',    level: 85, category: 'backend'  },
+  { name: 'Rust',       level: 70, category: 'systems'  },
   { name: 'Go',         level: 75, category: 'backend'  },
   { name: 'PostgreSQL', level: 80, category: 'backend'  },
   { name: 'Docker',     level: 85, category: 'systems'  },
-  { name: 'Rust',       level: 70, category: 'systems'  },
   { name: 'Kubernetes', level: 65, category: 'systems'  },
-  { name: 'AWS',        level: 70, category: 'systems'  },
   { name: 'Figma',      level: 80, category: 'design'   },
+  { name: 'Tailwind',   level: 95, category: 'frontend' },
+  { name: 'GraphQL',    level: 75, category: 'frontend' },
+  { name: 'AWS',        level: 70, category: 'systems'  },
 ];
 ```
 

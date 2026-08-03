@@ -1,7 +1,7 @@
 ---
-title: "Polaroid Testimonials: Tilted Photo Card Quotes"
+title: "Polaroid Testimonials: Tilted Photo Cards with Quotes"
 sidebarTitle: "Polaroids"
-description: "Renders testimonials as physical polaroid photo cards with slight rotations, parallax x/y offsets, and hue-shifted gradient photo placeholders. Hover flattens and scales each card."
+description: "Renders testimonials as scattered polaroid cards with rotation, x/y offsets, and hue-shifted photos. Hovering flattens the tilt and scales to 105%."
 ---
 
 `PolaroidTestimonials` displays colleague testimonials as a row of polaroid-style photo cards. Each card is slightly rotated and offset to give the impression of a scatter of printed photographs. Hovering a card flattens its tilt and scales it up using Framer Motion's `whileHover` prop, bringing it visually to the front.
@@ -10,7 +10,7 @@ description: "Renders testimonials as physical polaroid photo cards with slight 
 
 Cards are arranged in a `flex-wrap` row with `gap-8 md:gap-16` padding, centered on the page. Each card is 288px (`w-72`) wide, with a light `#e2e8f0` background (the characteristic off-white of a physical polaroid), `p-4` on the sides and top, and `pb-12` for the bottom caption area, mimicking the wider white border at the base.
 
-A small "tape" element is absolutely positioned at the top center — a 24×6px translucent white strip rotated slightly, simulating a piece of tape holding the polaroid to a surface.
+A small "tape" element is absolutely positioned at the top center — a `w-24` (96px) × `h-6` (24px) translucent white strip rotated slightly, simulating a piece of tape holding the polaroid to a surface.
 
 ### Photo placeholder
 

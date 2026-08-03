@@ -40,42 +40,49 @@ const articles = [
     title: 'The Void of Undefined: TypeScript Edge Cases',
     topic: 'Language',
     magnitude: 3,
+    x: 20, y: 30,
   },
   {
     id: 'a2',
     title: 'Rendering the Cosmos: WebGL Optimization',
     topic: 'Performance',
     magnitude: 5,
+    x: 50, y: 20,
   },
   {
     id: 'a3',
     title: 'Quiet Interfaces: Designing for High Cognitive Load',
     topic: 'Design',
     magnitude: 4,
+    x: 75, y: 40,
   },
   {
     id: 'a4',
     title: 'State Management in Zero Gravity',
     topic: 'Architecture',
     magnitude: 4,
+    x: 35, y: 65,
   },
   {
     id: 'a5',
     title: 'Micro-interactions: The Dust of the UI',
     topic: 'Design',
     magnitude: 2,
+    x: 60, y: 75,
   },
   {
     id: 'a6',
     title: 'Parsing 10GB JSON without Crashing',
     topic: 'Backend',
     magnitude: 3,
+    x: 85, y: 80,
   },
   {
     id: 'a7',
     title: 'Why I Still Use Makefiles',
     topic: 'Tooling',
     magnitude: 1,
+    x: 10, y: 80,
   },
 ];
 ```
@@ -100,11 +107,11 @@ const articles = [
 | `title` | `string` | Article title displayed in the hover tooltip and as the star label. |
 | `topic` | `string` | Category tag rendered as a pill label. Used for visual grouping — not programmatic filtering. |
 | `magnitude` | `number` | Integer 1–5. Controls the rendered star size. Higher = longer / more in-depth article. |
-| `x` | `number` | *(Optional)* Horizontal position as percentage of container width. If omitted, positions are auto-distributed. |
-| `y` | `number` | *(Optional)* Vertical position as percentage of container height. If omitted, positions are auto-distributed. |
+| `x` | `number` | Horizontal position as percentage of container width (0–100). Omit to let the component auto-distribute positions. |
+| `y` | `number` | Vertical position as percentage of container height (0–100). Omit to let the component auto-distribute positions. |
 
 <Note>
-  The demo data does not include explicit `x` and `y` values. When these fields are absent, `StarMapIndex` assigns positions algorithmically to avoid overlap. Provide explicit coordinates only if you want precise constellation-style groupings.
+  The demo data includes explicit `x` and `y` coordinates for all seven articles. When these fields are present, `StarMapIndex` places each star at exactly that position (as a percentage of the container). If you omit them, the component will fall back to algorithmic placement to avoid overlap.
 </Note>
 
 ## Adding an Article

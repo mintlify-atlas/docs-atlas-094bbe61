@@ -42,36 +42,36 @@ const testimonials = [
     author: 'Dr. E. Vance',
     role: 'Lead Architect @ Nova Systems',
     text: "Brought order to our chaotic frontend architecture. Their ability to see the entire system while sweating the micro-interactions is rare.",
-    rotation: -3,   // degrees — slight counter-clockwise tilt
-    x: 20,          // % from left
-    y: 30,          // % from top
-    imageHue: 180,  // teal-blue placeholder
+    rotation: -2,   // degrees — slight counter-clockwise tilt
+    x: 0,           // % from left
+    y: 0,           // % from top
+    imageHue: 190,  // teal-blue placeholder
   },
   {
     id: 't2',
     author: 'S. Chen',
     role: 'Product Manager',
     text: "Communicates complex technical constraints with absolute clarity. Never says \"it's impossible\", only \"here are the physics of that request\".",
-    rotation: 2,
-    x: 50,
-    y: 20,
-    imageHue: 270,  // violet placeholder
+    rotation: 3,
+    x: 20,
+    y: 40,
+    imageHue: 260,  // violet placeholder
   },
   {
     id: 't3',
     author: 'M. Rodriguez',
     role: 'Senior Developer',
     text: "The cleanest code I've ever inherited. Every module felt like a well-calibrated instrument.",
-    rotation: -1,
-    x: 75,
-    y: 35,
-    imageHue: 60,   // warm yellow-green placeholder
+    rotation: -4,
+    x: -20,
+    y: 20,
+    imageHue: 220,  // blue-indigo placeholder
   },
 ];
 ```
 
 <Note>
-  The `rotation`, `x`, `y`, and `imageHue` fields shown above are representative values. The source component generates or infers these for the demo data — check `PolaroidTestimonials.js` for the exact defaults and adjust them to suit your layout.
+  The `rotation`, `x`, `y`, and `imageHue` values above are the exact defaults from `PolaroidTestimonials.js`. Adjust them freely to suit your own layout — `x` and `y` are applied as pixel offsets via Framer Motion's `animate` prop, so negative values move cards left or up from their natural flow position.
 </Note>
 
 ## Testimonial Quotes

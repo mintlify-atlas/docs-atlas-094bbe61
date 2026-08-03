@@ -1,7 +1,7 @@
 ---
-title: "Aurora Components: The Observatory UI System"
+title: "Aurora Components: The Observatory UI System Overview"
 sidebarTitle: "Overview"
-description: "A complete reference for all 13 Aurora UI components powering Observatory's space-themed portfolio. Organized by role: backgrounds, layout, visualization, and content."
+description: "A complete reference for all 13 Aurora UI components powering Observatory. Organized by role: backgrounds, layout, data visualization, and content."
 ---
 
 Observatory's UI is built on a single, cohesive design system called **Aurora**. Every visual element — from the star-dusted hero background to the polaroid testimonials — is an Aurora component. All components are written in React 18, animated with Framer Motion, styled with Tailwind CSS, and navigated with React Router v6.
@@ -92,4 +92,4 @@ All Aurora components share a set of conventions:
 - **No external props** — data is co-located in each component file as a plain JavaScript array. To customize, edit the array directly.
 - **Framer Motion via proxy** — animations import `m` from `assets/proxy.js`, which re-exports `framer-motion`. Use `m.div`, `m.button`, `m.line`, etc.
 - **Tailwind aurora palette** — custom color tokens (`aurora-turquoise`, `aurora-teal`, `aurora-seafoam`, `aurora-violet`, `aurora-magenta`, `space-800`, `space-900`) defined in `tailwind.config.js`.
-- **`AnimatePresence`** — tooltip and panel transitions use `AnimatePresence` with `mode="wait"` to ensure exit animations complete before the next element mounts.
+- **`AnimatePresence`** — tooltip and panel transitions use `AnimatePresence` to coordinate entry and exit animations. Detail panels (OrbitalPath, CaseStudyReader) add `mode="wait"` so the exit animation finishes before the next panel mounts; tooltip overlays omit the mode and allow overlapping transitions.
